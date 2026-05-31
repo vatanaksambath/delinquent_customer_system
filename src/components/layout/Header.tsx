@@ -15,16 +15,7 @@ export default function Header({
       style={{ width: `calc(100% - ${sidebarWidth}px)` }}
     >
       <div className="flex items-center gap-4">
-        <div className="relative group">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/60 text-[15px] group-focus-within:text-primary transition-colors duration-200">
-            search
-          </span>
-          <input
-            className="bg-muted/60 border border-border/70 rounded-xl pl-9 pr-4 py-1.5 text-[11px] font-medium text-foreground focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/10 focus:bg-card w-56 transition-all duration-200 placeholder:text-muted-foreground/50 shadow-sm"
-            placeholder="Search accounts..."
-            type="text"
-          />
-        </div>
+        {/* Search removed */}
       </div>
 
       <div className="flex items-center gap-5">

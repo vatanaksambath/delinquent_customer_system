@@ -56,7 +56,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="bg-background text-foreground transition-colors duration-300 antialiased font-body">
+      <body suppressHydrationWarning className="bg-background text-foreground transition-colors duration-300 antialiased font-body">
         <QueryProvider>
           {children}
           <GlobalModal />

@@ -15,6 +15,7 @@ import {
 } from "@/types";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
+import { useMasterDataStore } from "@/store/masterDataStore";
 
 export default function MonitoringScreen({
   preloadData,
@@ -43,6 +44,9 @@ export default function MonitoringScreen({
   }>({ key: null, direction: "asc" });
   const [currentView, setCurrentView] = useState<"table" | "add">("table");
   const [toast, setToast] = useState<string | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<any>(null);
+  const [isTrackerDrawerOpen, setIsTrackerDrawerOpen] = useState(false);
+  const [isGlobalSiteVisitHistoryOpen, setIsGlobalSiteVisitHistoryOpen] = useState(false);
 
   useEffect(() => {
     if (preloadData) {
@@ -229,18 +233,7 @@ export default function MonitoringScreen({
                 </h2>
               </div>
               <div className="flex items-center gap-1.5 overflow-visible pb-1">
-                {/* Operation Actions */}
-                <button
-                  onClick={() => setCurrentView("add")}
-                  className="tech-button h-9 px-4 bg-primary text-on-primary text-[9px] font-bold uppercase tracking-wider shadow-lg shadow-primary/20 hover:brightness-110 flex items-center gap-2 cursor-pointer shrink-0 rounded-lg"
-                >
-                  <span className="material-symbols-outlined text-[18px]">
-                    add
-                  </span>
-                  Add New
-                </button>
 
-                <div className="w-[1px] h-4 bg-outline/30 mx-1 shrink-0"></div>
 
                 {/* Table Control Actions */}
                 <button
@@ -421,6 +414,14 @@ export default function MonitoringScreen({
                 sortConfig={sortConfig}
                 onSort={handleSort}
                 onCallSiteVisit={onAccountSelect}
+                onTrackSiteVisit={(entry) => {
+                  setSelectedEntry(entry);
+                  setIsTrackerDrawerOpen(true);
+                }}
+                onViewSiteVisit={(entry) => {
+                  setSelectedEntry(entry);
+                  setIsGlobalSiteVisitHistoryOpen(true);
+                }}
               />
             </div>
           </motion.div>
@@ -440,6 +441,29 @@ export default function MonitoringScreen({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Tracker overlay accessible from table action */}
+      <SiteVisitDrawer
+        isOpen={isTrackerDrawerOpen}
+        initialView="TRACKER"
+        onClose={() => setIsTrackerDrawerOpen(false)}
+        onSave={() => {}}
+        account={{
+          cid: selectedEntry?.cid || "N/A",
+          customerName: selectedEntry?.customer_name || "N/A",
+          totalBalance: selectedEntry?.usd_equivalent || 0,
+          dpd: typeof selectedEntry?.past_due === "number" ? selectedEntry.past_due : 0,
+        }}
+        currentUser="Agent"
+      />
+
+      {/* History overlay accessible from table View action */}
+      <SiteVisitHistoryDrawer
+        isOpen={isGlobalSiteVisitHistoryOpen}
+        onClose={() => setIsGlobalSiteVisitHistoryOpen(false)}
+        customerName={selectedEntry?.customer_name || "N/A"}
+        cid={selectedEntry?.cid || "N/A"}
+      />
     </motion.div>
   );
 }
@@ -454,8 +478,11 @@ const AddMonitoringPage = ({
   onAdd: (data: Partial<LedgerEntry>) => void;
   initialData?: any;
 }) => {
+  const masterData = useMasterDataStore((state) => state.data);
+
   // Site Visit Flow State
   const [isSiteVisitDrawerOpen, setIsSiteVisitDrawerOpen] = useState(false);
+  const [siteVisitDrawerView, setSiteVisitDrawerView] = useState<"FORM" | "TRACKER">("FORM");
   const [isSiteVisitHistoryOpen, setIsSiteVisitHistoryOpen] = useState(false);
   const [siteVisitData, setSiteVisitData] = useState<any>(null);
 
@@ -766,25 +793,13 @@ const AddMonitoringPage = ({
                 label="Industry Type"
                 value={formData.industry_type}
                 onChange={(v: string) => handleChange("industry_type", v)}
-                options={[
-                  "Retail",
-                  "Manufacturing",
-                  "Technology",
-                  "Service",
-                  "Agriculture",
-                ]}
+                options={masterData.industryType.map((d) => d.value)}
               />
               <SelectField
                 label="Business Type"
                 value={formData.business_type}
                 onChange={(v: string) => handleChange("business_type", v)}
-                options={[
-                  "Sole Proprietorship",
-                  "Partnership",
-                  "Corporate Entity",
-                  "Non-Profit",
-                  "Government",
-                ]}
+                options={masterData.businessType.map((d) => d.value)}
               />
             </div>
           </section>
@@ -875,24 +890,13 @@ const AddMonitoringPage = ({
                 label="Reason of Loan Default"
                 value={formData.reason_loan_default}
                 onChange={(v: string) => handleChange("reason_loan_default", v)}
-                options={[
-                  "Business Failure",
-                  "Market Volatility",
-                  "Personal Exigency",
-                  "Medical Issues",
-                  "Property Damage",
-                ]}
+                options={masterData.reasonLoanDefault.map((d) => d.value)}
               />
               <SelectField
                 label="Legal Action"
                 value={formData.legal_action}
                 onChange={(v: string) => handleChange("legal_action", v)}
-                options={[
-                  "Non Legal Case",
-                  "Mediation Pending",
-                  "Litigation Initiated",
-                  "Asset Seizure",
-                ]}
+                options={masterData.legalAction.map((d) => d.value)}
               />
               <SelectField
                 label="Date of Approval (Legal Action)"
@@ -910,14 +914,7 @@ const AddMonitoringPage = ({
                 label="Legal Stage"
                 value={formData.legal_stage}
                 onChange={(v: string) => handleChange("legal_stage", v)}
-                options={[
-                  "Not Started",
-                  "Information Gathering",
-                  "Notice Issued",
-                  "Court Filing",
-                  "Judgment",
-                  "Execution",
-                ]}
+                options={masterData.legalStage.map((d) => d.value)}
               />
               <div className="col-span-1 md:col-span-2">
                 <InputField
@@ -971,27 +968,39 @@ const AddMonitoringPage = ({
                   label="Channel of Last Contact"
                   value={formData.channel_contact}
                   onChange={(v: string) => handleChange("channel_contact", v)}
-                  options={[
-                    "Phone Call",
-                    "Site Visit",
-                    "Office Meeting",
-                    "Email/Letter",
-                    "Third Party Messenger",
-                  ]}
+                  options={masterData.channelContact.map((d) => d.value)}
                 />
                 {formData.channel_contact === "Site Visit" && (
-                  <button
-                    type="button"
-                    onClick={() => setIsSiteVisitDrawerOpen(true)}
-                    className="mt-2 w-full px-4 py-2 bg-muted border border-indigo-200  text-indigo-600  text-xs font-bold rounded-lg shadow-sm flex items-center justify-center gap-2 hover:bg-accent  transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">
-                      edit_document
-                    </span>
-                    {siteVisitData
-                      ? "Edit Site Visit Report"
-                      : "Complete Site Visit Report"}
-                  </button>
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSiteVisitDrawerView("FORM");
+                        setIsSiteVisitDrawerOpen(true);
+                      }}
+                      className="flex-1 px-4 py-2 bg-muted border border-indigo-200 text-indigo-600 text-xs font-bold rounded-lg shadow-sm flex items-center justify-center gap-2 hover:bg-accent transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">
+                        edit_document
+                      </span>
+                      {siteVisitData ? "Edit Report" : "Complete Report"}
+                    </button>
+                    {siteVisitData && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSiteVisitDrawerView("TRACKER");
+                          setIsSiteVisitDrawerOpen(true);
+                        }}
+                        className="flex-1 px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-600 text-xs font-bold rounded-lg shadow-sm flex items-center justify-center gap-2 hover:bg-indigo-100 transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">
+                          timeline
+                        </span>
+                        Track Status
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
               <ToggleField
@@ -1032,13 +1041,7 @@ const AddMonitoringPage = ({
                   onChange={(v: string) =>
                     handleChange("meet_possible_solution", v)
                   }
-                  options={[
-                    "Full Settlement",
-                    "Partial Settlement",
-                    "Restructuring",
-                    "Grace Period Extension",
-                    "Asset Liquidation",
-                  ]}
+                  options={masterData.possibleSolution.map((d) => d.value)}
                 />
                 <SelectField
                   label="Specific Resolution"
@@ -1046,12 +1049,7 @@ const AddMonitoringPage = ({
                   onChange={(v: string) =>
                     handleChange("meet_specific_resolution", v)
                   }
-                  options={[
-                    "Installment Plan Agreement",
-                    "Interest Rate Reduction",
-                    "Collateral Swap",
-                    "Third-Party Buyout",
-                  ]}
+                  options={masterData.specificResolution.map((d) => d.value)}
                 />
                 <SelectField
                   label="Solution Status"
@@ -1059,13 +1057,7 @@ const AddMonitoringPage = ({
                   onChange={(v: string) =>
                     handleChange("meet_solution_status", v)
                   }
-                  options={[
-                    "Negotiation",
-                    "Pending Documentation",
-                    "Sent for Approval",
-                    "Signed/Executed",
-                    "Implementation",
-                  ]}
+                  options={masterData.resolutionStatus.map((d) => d.value)}
                 />
                 <InputField
                   label="Expected Date"
@@ -1175,13 +1167,7 @@ const AddMonitoringPage = ({
                   onChange={(v: string) =>
                     handleChange("meet_delivery_channel", v)
                   }
-                  options={[
-                    "Hand Delivery",
-                    "Registered Post",
-                    "Courier Service",
-                    "Digital Portal",
-                    "Email Confirmation",
-                  ]}
+                  options={masterData.deliveryLetterChannel.map((d) => d.value)}
                 />
                 <InputField
                   label="Date to Delivery"
@@ -1197,12 +1183,7 @@ const AddMonitoringPage = ({
                   onChange={(v: string) =>
                     handleChange("meet_none_solution", v)
                   }
-                  options={[
-                    "Legal Escalation",
-                    "Account Suspension",
-                    "Write-off Investigation",
-                    "Collateral Possession",
-                  ]}
+                  options={masterData.noneSolution.map((d) => d.value)}
                 />
 
                 <SelectField
@@ -1211,13 +1192,7 @@ const AddMonitoringPage = ({
                   onChange={(v: string) =>
                     handleChange("meet_action_progress", v)
                   }
-                  options={[
-                    "0% Initiated",
-                    "25% Evidence Building",
-                    "50% Internal Audit",
-                    "75% Approval Stage",
-                    "100% Resolved",
-                  ]}
+                  options={masterData.actionProgress.map((d) => d.value)}
                 />
                 <InputField
                   label="Date of Submit"
@@ -1270,13 +1245,7 @@ const AddMonitoringPage = ({
                   onChange={(v: string) =>
                     handleChange("not_meet_next_action", v)
                   }
-                  options={[
-                    "Follow-up Call",
-                    "Second Site Visit",
-                    "Third-Party Verification",
-                    "Legal Demand Letter",
-                    "Enforcement Inquiry",
-                  ]}
+                  options={masterData.nextActionType.map((d) => d.value)}
                 />
                 <InputField
                   label="Next Action Date"
@@ -1388,13 +1357,7 @@ const AddMonitoringPage = ({
                   onChange={(v: string) =>
                     handleChange("not_meet_delivery_channel", v)
                   }
-                  options={[
-                    "Registered Post",
-                    "Courier Service",
-                    "Digital Portal",
-                    "Email Confirmation",
-                    "Public Notice",
-                  ]}
+                  options={masterData.deliveryLetterChannel.map((d) => d.value)}
                 />
                 <InputField
                   label="Date to Delivery"
@@ -1452,6 +1415,7 @@ const AddMonitoringPage = ({
       {/* Site Visit Interceptor Drawer */}
       <SiteVisitDrawer
         isOpen={isSiteVisitDrawerOpen}
+        initialView={siteVisitDrawerView}
         onClose={() => {
           setIsSiteVisitDrawerOpen(false);
           // Revert selection if canceled without saving
@@ -1461,7 +1425,6 @@ const AddMonitoringPage = ({
         }}
         onSave={(data) => {
           setSiteVisitData(data);
-          setIsSiteVisitDrawerOpen(false);
         }}
         account={{
           cid: formData.cid || "N/A",

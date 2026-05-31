@@ -65,7 +65,7 @@ export default function WorkflowRulesScreen() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="max-w-4xl gap-8">
         {/* Bucket Adjuster Form */}
         <div className="modern-card border border-border bg-card  shadow-sm">
           <div className="p-4 border-b border-border bg-muted rounded-t-[1.3rem] flex justify-between items-center">
@@ -180,89 +180,7 @@ export default function WorkflowRulesScreen() {
           </div>
         </div>
 
-        {/* Contact Governance Constraints */}
-        <div className="modern-card border border-border bg-card  shadow-sm h-fit">
-          <div className="p-4 border-b border-border bg-muted rounded-t-[1.3rem]">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-foreground flex items-center gap-2">
-              <span className="material-symbols-outlined text-accent">
-                admin_panel_settings
-              </span>
-              Contact Governance
-            </h2>
-            <p className="text-[10px] text-muted-foreground mt-1">
-              Configure compliance constraints for outbound omnichannel
-              communications.
-            </p>
-          </div>
 
-          <div className="p-6 flex flex-col gap-6">
-            {/* Toggle 1 */}
-            <label className="flex items-center justify-between cursor-pointer group">
-              <div className="pr-4">
-                <h4 className="text-sm font-bold text-foreground mb-1">
-                  Block Evening Outreach
-                </h4>
-                <p className="text-[10px] text-muted-foreground">
-                  Halt automated SMS and calls between 8 PM and 8 AM based on
-                  borrower's local timezone (TCPA Compliance).
-                </p>
-              </div>
-              <div className="relative">
-                <input
-                  type="checkbox"
-                  className="peer sr-only"
-                  defaultChecked
-                />
-                <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:bg-success peer-focus:ring-2 peer-focus:ring-primary/50 transition-colors"></div>
-                <div className="absolute top-1 left-1 bg-card w-4 h-4 rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
-              </div>
-            </label>
-
-            <div className="h-[1px] bg-outline/10 w-full" />
-
-            {/* Input 1 */}
-            <div className="flex items-center justify-between">
-              <div className="pr-4">
-                <h4 className="text-sm font-bold text-foreground mb-1">
-                  Maximum Weekly Touchpoints
-                </h4>
-                <p className="text-[10px] text-muted-foreground">
-                  Limit total outbound actions (Voice + SMS + Email) per account
-                  per calendar week.
-                </p>
-              </div>
-              <input
-                type="number"
-                defaultValue={7}
-                className="w-20 bg-card  border border-border rounded-lg p-2 text-center font-bold text-primary focus:border-primary outline-none"
-              />
-            </div>
-
-            <div className="h-[1px] bg-outline/10 w-full" />
-
-            {/* Toggle 2 */}
-            <label className="flex items-center justify-between cursor-pointer group">
-              <div className="pr-4">
-                <h4 className="text-sm font-bold text-foreground mb-1">
-                  Cease & Desist Auto-Pause
-                </h4>
-                <p className="text-[10px] text-muted-foreground">
-                  Automatically pause all logic flows if account is flagged for
-                  C&D or Legal Action.
-                </p>
-              </div>
-              <div className="relative">
-                <input
-                  type="checkbox"
-                  className="peer sr-only"
-                  defaultChecked
-                />
-                <div className="w-11 h-6 bg-muted rounded-full peer peer-checked:bg-success transition-colors"></div>
-                <div className="absolute top-1 left-1 bg-card w-4 h-4 rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
-              </div>
-            </label>
-          </div>
-        </div>
       </div>
     </motion.div>
   );

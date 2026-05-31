@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { CustomSelect } from "@/components/ui/CustomSelect";
+import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
 import { ExportDropdown } from "@/features/accounts/components/LedgerTable";
 import {
   Search,
@@ -172,6 +173,46 @@ export default function PTPTrackerScreen() {
   const [activeViewId, setActiveViewId] = useState<string | null>(null);
   const [isSavingView, setIsSavingView] = useState(false);
   const [newViewName, setNewViewName] = useState("");
+
+  const [isAddingNote, setIsAddingNote] = useState(false);
+  const [newNote, setNewNote] = useState("");
+  const [isExtendingDate, setIsExtendingDate] = useState(false);
+  const [newExtensionDate, setNewExtensionDate] = useState("");
+
+  const handleAddNote = (id: string) => {
+    if (!newNote.trim()) {
+      setIsAddingNote(false);
+      return;
+    }
+    setPtps((prev) =>
+      prev.map((ptp) =>
+        ptp.id === id ? {
+          ...ptp,
+          history: [...ptp.history, { date: new Date().toISOString(), action: `Manual Note: ${newNote}`, agent: "Current User" }]
+        } : ptp
+      )
+    );
+    setNewNote("");
+    setIsAddingNote(false);
+  };
+
+  const handleExtendPtpDate = (id: string) => {
+    if (!newExtensionDate) {
+      setIsExtendingDate(false);
+      return;
+    }
+    setPtps((prev) =>
+      prev.map((ptp) =>
+        ptp.id === id ? {
+          ...ptp,
+          dueDate: newExtensionDate,
+          history: [...ptp.history, { date: new Date().toISOString(), action: `Time Extension: ${ptp.dueDate} → ${newExtensionDate}`, agent: "Current User" }]
+        } : ptp
+      )
+    );
+    setNewExtensionDate("");
+    setIsExtendingDate(false);
+  };
 
   const [activeFilters, setActiveFilters] = useState<FilterItem[]>(() => {
     try {
@@ -1294,10 +1335,39 @@ export default function PTPTrackerScreen() {
                       <XCircle className="w-4 h-4" /> Escalate (Broken)
                     </button>
                   </div>
-                  <button className="flex items-center justify-center gap-2 bg-card  text-foreground hover:bg-card  border border-border  py-3 rounded-xl text-sm font-semibold shadow-sm transition-all">
-                    <Clock className="w-4 h-4 text-muted-foreground/70" />{" "}
-                    Log Time Extension
-                  </button>
+                  {isExtendingDate ? (
+                    <div className="flex flex-col gap-2 mt-2">
+                      <div className="z-[150] relative">
+                        <CustomDatePicker
+                          value={newExtensionDate}
+                          onChange={setNewExtensionDate}
+                          className="w-full h-10"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleExtendPtpDate(selectedPtp.id)}
+                          className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 py-2 rounded-lg text-sm font-semibold transition-all"
+                        >
+                          Save Date
+                        </button>
+                        <button
+                          onClick={() => { setIsExtendingDate(false); setNewExtensionDate(""); }}
+                          className="flex-1 bg-muted text-muted-foreground hover:bg-muted/80 py-2 rounded-lg text-sm font-semibold transition-all"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => setIsExtendingDate(true)}
+                      className="flex items-center justify-center gap-2 bg-card  text-foreground hover:bg-card  border border-border  py-3 rounded-xl text-sm font-semibold shadow-sm transition-all"
+                    >
+                      <Clock className="w-4 h-4 text-muted-foreground/70" />{" "}
+                      Log Time Extension
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -1333,22 +1403,43 @@ export default function PTPTrackerScreen() {
                   ))}
                   <div className="relative">
                     <div className="absolute -left-[31px] top-0.5 w-4 h-4 rounded-full bg-card  border-2 border-border  flex items-center justify-center" />
-                    <button className="text-sm font-medium text-primary hover:text-primary hover:underline">
-                      Add manual note...
-                    </button>
+                    {isAddingNote ? (
+                      <div className="flex flex-col gap-2">
+                        <textarea
+                          autoFocus
+                          placeholder="Type your note here..."
+                          value={newNote}
+                          onChange={(e) => setNewNote(e.target.value)}
+                          className="bg-background border border-border rounded-lg px-3 py-2 text-sm min-h-[60px] focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleAddNote(selectedPtp.id)}
+                            className="bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                          >
+                            Save Note
+                          </button>
+                          <button
+                            onClick={() => { setIsAddingNote(false); setNewNote(""); }}
+                            className="bg-muted text-muted-foreground hover:bg-muted/80 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button 
+                        onClick={() => setIsAddingNote(true)}
+                        className="text-sm font-medium text-primary hover:text-primary/80 hover:underline"
+                      >
+                        Add manual note...
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
 
-              {/* Quick Communication Hooks */}
-              <div className="mt-auto border-t border-border pt-6 grid grid-cols-2 gap-3">
-                <button className="flex items-center justify-center gap-2 bg-on-surface text-surface text-primary-foreground hover:bg-on-surface-variant py-3 rounded-xl text-sm font-bold shadow-sm transition-all">
-                  <PhoneCall className="w-4 h-4" /> Call Borrower
-                </button>
-                <button className="flex items-center justify-center gap-2 bg-card  text-foreground hover:bg-card  border border-border  py-3 rounded-xl text-sm font-bold shadow-sm transition-all">
-                  <MessageSquare className="w-4 h-4" /> Send SMS
-                </button>
-              </div>
+
             </div>
           </div>
         )}

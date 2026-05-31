@@ -109,6 +109,7 @@ export interface SiteVisitDrawerProps {
   };
   currentUser: string;
   initialData?: SiteVisitFormValues | null;
+  initialView?: "FORM" | "TRACKER";
 }
 
 // Modern Switch Component
@@ -136,6 +137,149 @@ const Switch = ({
   </button>
 );
 
+type ApprovalStatus = "PENDING_RM" | "APPROVED_RM" | "REJECTED_RM" | "PENDING_BM" | "APPROVED_BM" | "REJECTED_BM";
+
+const SiteVisitTracker = ({ 
+  status, 
+  onSimulateAction 
+}: { 
+  status: ApprovalStatus; 
+  onSimulateAction: (action: ApprovalStatus) => void 
+}) => {
+  const getCurrentTime = () => new Date().toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+
+  const steps = [
+    { id: "submit", title: "Request Submitted", description: "Form completed & verified", active: true, completed: true },
+    { 
+      id: "rm", 
+      title: "RM Approval", 
+      description: status.includes("RM") 
+        ? (status === "PENDING_RM" ? "Waiting for review" : 
+           status === "APPROVED_RM" ? <span className="flex flex-col gap-0.5"><span>Approved by <span className="font-bold text-foreground">Robert Smith</span></span><span className="text-[10px] uppercase tracking-widest">{getCurrentTime()}</span></span> : 
+           <span className="flex flex-col gap-0.5"><span>Rejected by <span className="font-bold text-foreground">Robert Smith</span></span><span className="text-[10px] uppercase tracking-widest">{getCurrentTime()}</span></span>) 
+        : <span className="flex flex-col gap-0.5"><span>Approved by <span className="font-bold text-foreground">Robert Smith</span></span><span className="text-[10px] uppercase tracking-widest">Previous Step</span></span>, 
+      active: status.includes("RM") || status.includes("BM"), 
+      completed: status === "APPROVED_RM" || status.includes("BM"),
+      rejected: status === "REJECTED_RM"
+    },
+    { 
+      id: "bm", 
+      title: "Branch Manager Approval", 
+      description: status.includes("BM") 
+        ? (status === "PENDING_BM" ? "Waiting for review" : 
+           status === "APPROVED_BM" ? <span className="flex flex-col gap-0.5"><span>Approved by <span className="font-bold text-foreground">Michael Brown</span></span><span className="text-[10px] uppercase tracking-widest">{getCurrentTime()}</span></span> : 
+           <span className="flex flex-col gap-0.5"><span>Rejected by <span className="font-bold text-foreground">Michael Brown</span></span><span className="text-[10px] uppercase tracking-widest">{getCurrentTime()}</span></span>) 
+        : "Pending RM", 
+      active: status.includes("BM"), 
+      completed: status === "APPROVED_BM",
+      rejected: status === "REJECTED_BM"
+    }
+  ];
+
+  return (
+    <div className="flex-1 overflow-y-auto px-8 py-8 custom-scrollbar">
+      <div className="max-w-2xl mx-auto space-y-10">
+        <div className="text-center space-y-2">
+          <h2 className="text-2xl font-bold text-foreground tracking-tight">Request Status</h2>
+          <p className="text-sm text-muted-foreground font-medium">Track the real-time progress of your Site Visit Request.</p>
+        </div>
+
+        <div className="bg-card rounded-2xl shadow-sm border border-border p-8 py-10">
+          <div className="relative pl-6">
+            {steps.map((step, idx) => (
+              <div key={step.id} className="flex gap-6 relative">
+                {/* Connecting line */}
+                {idx !== steps.length - 1 && (
+                  <div className={`absolute left-[15px] top-[30px] bottom-[-30px] w-0.5 rounded-full transition-colors duration-500 ${step.completed ? "bg-green-500" : step.rejected ? "bg-red-500" : "bg-border"}`} />
+                )}
+                
+                {/* Step Circle */}
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 relative z-10 transition-colors duration-500 ${
+                  step.completed ? "bg-green-500 text-white shadow-lg shadow-green-500/30" :
+                  step.rejected ? "bg-red-500 text-white shadow-lg shadow-red-500/30" :
+                  step.active ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30 ring-4 ring-blue-600/20" :
+                  "bg-muted text-muted-foreground border border-border"
+                }`}>
+                  {step.completed ? (
+                    <span className="material-symbols-outlined text-[18px]">check</span>
+                  ) : step.rejected ? (
+                    <span className="material-symbols-outlined text-[18px]">close</span>
+                  ) : step.active ? (
+                    <div className="w-2.5 h-2.5 rounded-full bg-white animate-pulse" />
+                  ) : (
+                    <span className="w-2 h-2 rounded-full bg-muted-foreground" />
+                  )}
+                </div>
+
+                {/* Step Content */}
+                <div className="pb-12 pt-1">
+                  <h3 className={`text-base font-bold mb-1 transition-colors duration-500 ${
+                    step.completed ? "text-foreground" :
+                    step.rejected ? "text-red-600" :
+                    step.active ? "text-blue-600" :
+                    "text-muted-foreground"
+                  }`}>
+                    {step.title}
+                  </h3>
+                  <p className={`text-sm font-medium ${
+                    step.completed || step.active || step.rejected ? "text-muted-foreground" : "text-muted-foreground/50"
+                  }`}>
+                    {step.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Mock Simulation Buttons */}
+        <div className="bg-primary/5 rounded-2xl border border-primary/20 p-6 space-y-4">
+          <div className="flex items-center gap-2 text-sm font-bold text-primary uppercase tracking-widest">
+            <span className="material-symbols-outlined text-[18px]">science</span>
+            Simulation Panel
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button 
+              onClick={(e) => { e.preventDefault(); onSimulateAction("PENDING_RM"); }}
+              className="px-4 py-2 bg-card border border-border rounded-lg text-xs font-bold text-foreground hover:bg-muted transition-colors shadow-sm"
+            >
+              Reset
+            </button>
+            <button 
+              onClick={(e) => { e.preventDefault(); onSimulateAction("APPROVED_RM"); }}
+              disabled={!status.includes("RM") || status === "REJECTED_RM"}
+              className="px-4 py-2 bg-card border border-green-200 rounded-lg text-xs font-bold text-green-700 hover:bg-green-50 disabled:opacity-50 transition-colors shadow-sm"
+            >
+              Approve (RM)
+            </button>
+            <button 
+              onClick={(e) => { e.preventDefault(); onSimulateAction("REJECTED_RM"); }}
+              disabled={!status.includes("RM") || status === "REJECTED_RM"}
+              className="px-4 py-2 bg-card border border-red-200 rounded-lg text-xs font-bold text-red-700 hover:bg-red-50 disabled:opacity-50 transition-colors shadow-sm"
+            >
+              Reject (RM)
+            </button>
+            <button 
+              onClick={(e) => { e.preventDefault(); onSimulateAction("APPROVED_BM"); }}
+              disabled={!status.includes("BM") || status === "REJECTED_BM"}
+              className="px-4 py-2 bg-card border border-green-200 rounded-lg text-xs font-bold text-green-700 hover:bg-green-50 disabled:opacity-50 transition-colors shadow-sm"
+            >
+              Approve (BM)
+            </button>
+            <button 
+              onClick={(e) => { e.preventDefault(); onSimulateAction("REJECTED_BM"); }}
+              disabled={!status.includes("BM") || status === "REJECTED_BM"}
+              className="px-4 py-2 bg-card border border-red-200 rounded-lg text-xs font-bold text-red-700 hover:bg-red-50 disabled:opacity-50 transition-colors shadow-sm"
+            >
+              Reject (BM)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export function SiteVisitDrawer({
   isOpen,
   onClose,
@@ -143,7 +287,23 @@ export function SiteVisitDrawer({
   account,
   currentUser,
   initialData,
+  initialView = "FORM",
 }: SiteVisitDrawerProps) {
+  const [view, setView] = useState<"FORM" | "TRACKER">(initialView);
+  const [approvalStatus, setApprovalStatus] = useState<ApprovalStatus>("PENDING_RM");
+
+  // Reset state when drawer opens or closes
+  React.useEffect(() => {
+    if (isOpen) {
+      setView(initialView);
+      setApprovalStatus("PENDING_RM");
+    } else {
+      setTimeout(() => {
+        setView("FORM");
+        setApprovalStatus("PENDING_RM");
+      }, 300);
+    }
+  }, [isOpen, initialView]);
   const {
     register,
     handleSubmit,
@@ -219,7 +379,19 @@ export function SiteVisitDrawer({
     setTimeout(() => {
       onSave(data);
       setIsSaving(false);
+      setView("TRACKER");
+      setApprovalStatus("PENDING_RM");
     }, 600);
+  };
+
+  const handleSimulateAction = (action: ApprovalStatus) => {
+    setApprovalStatus(action);
+    if (action === "APPROVED_RM") {
+      // Simulate moving to pending BM after RM approves
+      setTimeout(() => {
+        setApprovalStatus("PENDING_BM");
+      }, 800);
+    }
   };
 
   return (
@@ -231,15 +403,16 @@ export function SiteVisitDrawer({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-slate-900/15 dark:bg-slate-900/70 backdrop-blur-[8px] z-40 transition-opacity"
+            className="fixed inset-0 bg-slate-900/15 dark:bg-slate-900/70 backdrop-blur-[8px] z-[120] transition-opacity"
           />
           <motion.div
             initial={{ x: "100%", opacity: 0.5 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: "100%", opacity: 0.5 }}
             transition={{ type: "spring", damping: 30, stiffness: 300, mass: 0.8 }}
-            className="fixed inset-y-0 right-0 w-full max-w-4xl bg-slate-50/95 dark:bg-background/95 backdrop-blur-2xl shadow-[0_0_40px_rgba(0,0,0,0.1)] z-50 flex flex-col border-l border-white/20 dark:border-border font-sans"
+            className="fixed inset-y-0 right-0 w-full max-w-4xl bg-slate-50/95 dark:bg-background/95 backdrop-blur-2xl shadow-[0_0_40px_rgba(0,0,0,0.1)] z-[130] flex flex-col border-l border-white/20 dark:border-border font-sans"
           >
+            {view === "FORM" ? (
             <form
               onSubmit={handleSubmit(onSubmit)}
               className="flex flex-col h-full"
@@ -551,7 +724,7 @@ export function SiteVisitDrawer({
                             )}
                           >
                             <div className="flex items-center justify-between">
-                              <span className="text-sm text-slate-800  font-medium">
+                              <span className="text-sm text-foreground  font-medium">
                                 1. Physical change?
                               </span>
                               <Controller
@@ -603,7 +776,7 @@ export function SiteVisitDrawer({
                             )}
                           >
                             <div className="flex items-center justify-between">
-                              <span className="text-sm text-slate-800  font-medium">
+                              <span className="text-sm text-foreground  font-medium">
                                 2. Ownership Change?
                               </span>
                               <Controller
@@ -655,7 +828,7 @@ export function SiteVisitDrawer({
                             )}
                           >
                             <div className="flex items-center justify-between">
-                              <span className="text-sm text-slate-800  font-medium">
+                              <span className="text-sm text-foreground  font-medium">
                                 3. Change in Price?
                               </span>
                               <Controller
@@ -836,6 +1009,48 @@ export function SiteVisitDrawer({
                 </button>
               </div>
             </form>
+            ) : (
+              <div className="flex flex-col h-full">
+                {/* Header for Tracker */}
+                <div className="sticky top-0 z-10 px-8 py-5 border-b border-border bg-background/95 backdrop-blur-md shrink-0 flex justify-between items-center shadow-sm">
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <h2 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-muted-foreground " />
+                        Site-Visit Tracker
+                      </h2>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Tracking approval status for{" "}
+                      <span className="font-semibold text-card-foreground ">
+                        {account.customerName} ({account.cid})
+                      </span>
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-accent hover:text-accent-foreground text-muted-foreground transition-colors"
+                    title="Close"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                
+                <SiteVisitTracker status={approvalStatus} onSimulateAction={handleSimulateAction} />
+                
+                {/* Footer for Tracker */}
+                <footer className="sticky bottom-0 z-10 px-8 py-5 border-t border-border bg-background/95 backdrop-blur-md shrink-0 flex justify-end gap-3 shadow-[0_-4px_20px_rgba(0,0,0,0.02)]">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="h-11 px-8 rounded-xl bg-card border border-border text-foreground text-[11px] font-black uppercase tracking-widest hover:bg-muted transition-colors"
+                  >
+                    Close
+                  </button>
+                </footer>
+              </div>
+            )}
           </motion.div>
         </>
       )}

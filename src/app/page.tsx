@@ -13,8 +13,13 @@ import PTPTrackerScreen from "@/features/ptp-tracker/components/PTPTrackerScreen
 import TemplatesScreen from "@/features/templates/components/TemplatesScreen";
 import PerformanceKPIsScreen from "@/features/reports/components/PerformanceKPIsScreen";
 import WorkflowRulesScreen from "@/features/workflows/components/WorkflowRulesScreen";
-import AccountDetailScreen from "@/features/accounts/components/AccountDetailScreen";
+import WorklistScreen from "@/features/worklist/components/WorklistScreen";
+import Customer360Screen from "@/features/customer-360/components/Customer360Screen";
+import AssignmentScreen from "@/features/assignment/components/AssignmentScreen";
+
 import ConfigurationScreen from "@/features/configuration/components/ConfigurationScreen";
+import MasterDataScreen from "@/features/configuration/components/MasterDataScreen";
+import AuditLogsScreen from "@/features/audit-logs/components/AuditLogsScreen";
 
 import { useUIStore } from "@/store/uiStore";
 import type { LedgerEntry } from "@/types";
@@ -24,8 +29,7 @@ export default function HomePage() {
   const [activeMenu, setActiveMenu] = useState<MenuId>("dashboard");
   const [monitoringPreload, setMonitoringPreload] =
     useState<LedgerEntry | null>(null);
-  const [selectedAccountForDetail, setSelectedAccountForDetail] =
-    useState<LedgerEntry | null>(null);
+
 
   const { theme, setTheme } = useUIStore();
 
@@ -67,30 +71,36 @@ export default function HomePage() {
           className="flex-1 flex flex-col pt-16 w-full overflow-hidden"
         >
           <AnimatePresence mode="wait">
-            {activeMenu === "dashboard" && <DashboardScreen />}
-            {activeMenu === "account-detail" && (
-              <AccountDetailScreen
-                accountData={selectedAccountForDetail}
-                onBack={() => setActiveMenu("monitoring")}
+            {activeMenu === "dashboard" && <DashboardScreen key="dashboard" />}
+            {activeMenu === "worklist" && (
+              <WorklistScreen
+                key="worklist"
+                onStartCollection={(entry) => {
+                  setMonitoringPreload(entry);
+                  setActiveMenu("monitoring");
+                }}
               />
             )}
-            {activeMenu === "ptp" && <PTPTrackerScreen />}
-            {activeMenu === "templates" && <TemplatesScreen />}
-            {activeMenu === "performance-kpis" && <PerformanceKPIsScreen />}
-            {activeMenu === "workflow-rules" && <WorkflowRulesScreen />}
-            {activeMenu === "config" && <ConfigurationScreen />}
+            {activeMenu === "customer-360" && <Customer360Screen key="customer-360" />}
+            {activeMenu === "assignment" && <AssignmentScreen key="assignment" />}
+
+            {activeMenu === "ptp" && <PTPTrackerScreen key="ptp" />}
+            {activeMenu === "templates" && <TemplatesScreen key="templates" />}
+            {activeMenu === "performance-kpis" && <PerformanceKPIsScreen key="performance-kpis" />}
+            {activeMenu === "workflow-rules" && <WorkflowRulesScreen key="workflow-rules" />}
+            {activeMenu === "master-data" && <MasterDataScreen key="master-data" />}
+            {activeMenu === "config" && <ConfigurationScreen key="config" />}
+            {activeMenu === "audit-logs" && <AuditLogsScreen key="audit-logs" />}
             {activeMenu === "monitoring" && (
               <MonitoringScreen
+                key="monitoring"
                 preloadData={monitoringPreload}
                 onPreloadProcessed={() => setMonitoringPreload(null)}
-                onAccountSelect={(data: LedgerEntry) => {
-                  setSelectedAccountForDetail(data);
-                  setActiveMenu("account-detail");
-                }}
               />
             )}
             {activeMenu === "accounts" && (
               <AccountsScreen
+                key="accounts"
                 onCallSiteVisit={(data: LedgerEntry) => {
                   setMonitoringPreload(data);
                   setActiveMenu("monitoring");
@@ -99,6 +109,7 @@ export default function HomePage() {
             )}
             {activeMenu === "reports" && (
               <PortfolioReportScreen
+                key="reports"
                 onCallSiteVisit={(data: LedgerEntry) => {
                   setMonitoringPreload(data);
                   setActiveMenu("monitoring");

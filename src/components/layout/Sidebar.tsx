@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 
 export type MenuId =
   | "dashboard"
+  | "worklist"
+  | "customer-360"
   | "accounts"
   | "account-detail"
   | "ptp"
@@ -13,7 +15,8 @@ export type MenuId =
   | "audit-logs"
   | "workflow-rules"
   | "master-data"
-  | "config";
+  | "config"
+  | "assignment";
 
 interface SidebarProps {
   isExpanded: boolean;
@@ -29,12 +32,15 @@ export default function Sidebar({
   onMenuChange,
 }: SidebarProps) {
   const [openGroups, setOpenGroups] = useState<string[]>([
+    "workspace",
     "delinquent",
     "settings",
   ]);
   const [dateTime, setDateTime] = useState(new Date());
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const timer = setInterval(() => setDateTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
@@ -45,17 +51,17 @@ export default function Sidebar({
     );
   };
 
-  const formattedDate = dateTime.toLocaleDateString(undefined, {
+  const formattedDate = mounted ? dateTime.toLocaleDateString(undefined, {
     day: "2-digit",
     month: "short",
     year: "numeric",
-  });
-  const formattedTime = dateTime.toLocaleTimeString(undefined, {
+  }) : "";
+  const formattedTime = mounted ? dateTime.toLocaleTimeString(undefined, {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
     hour12: false,
-  });
+  }) : "";
 
   return (
     <motion.nav
@@ -113,6 +119,39 @@ export default function Sidebar({
           isExpanded={isExpanded}
           onClick={() => onMenuChange("dashboard")}
         />
+        
+        <NavItem
+          icon="360"
+          label="Customer 360"
+          active={activeMenu === "customer-360"}
+          isExpanded={isExpanded}
+          onClick={() => onMenuChange("customer-360")}
+        />
+        
+        <NavItem
+          icon="transfer_within_a_station"
+          label="Portfolio Reassignment"
+          active={activeMenu === "assignment"}
+          isExpanded={isExpanded}
+          onClick={() => onMenuChange("assignment")}
+        />
+
+        {/* WORKSPACE group */}
+        <MenuGroup
+          icon="task_alt"
+          label="Workspace"
+          isExpanded={isExpanded}
+          isOpen={openGroups.includes("workspace")}
+          onToggle={() => toggleGroup("workspace")}
+          accent
+        >
+          <SubNavItem
+            icon="format_list_bulleted"
+            label="My Worklist"
+            active={activeMenu === "worklist"}
+            onClick={() => onMenuChange("worklist")}
+          />
+        </MenuGroup>
 
         <MenuGroup
           icon="assignment_late"
@@ -204,7 +243,7 @@ export default function Sidebar({
           />
           <SubNavItem
             icon="route"
-            label="Workflow & Bucket Rules"
+            label="Bucket Rules"
             active={activeMenu === "workflow-rules"}
             onClick={() => onMenuChange("workflow-rules")}
           />
@@ -285,6 +324,7 @@ function MenuGroup({
   isOpen,
   onToggle,
   children,
+  accent,
 }: {
   icon: string;
   label: string;
@@ -292,6 +332,7 @@ function MenuGroup({
   isOpen: boolean;
   onToggle: () => void;
   children: React.ReactNode;
+  accent?: boolean;
 }) {
   const hasActiveChild = React.Children.toArray(children).some(
     (child: any) => child.props.active,
@@ -302,9 +343,11 @@ function MenuGroup({
       <button
         onClick={onToggle}
         className={`w-full flex items-center px-3 py-2.5 rounded-xl group relative ${
-          hasActiveChild && !isOpen && !isExpanded
-            ? "text-blue-600 "
-            : "text-muted-foreground hover:text-blue-600  hover:bg-accent hover:text-accent-foreground"
+          accent
+            ? "text-emerald-600 dark:text-emerald-400"
+            : hasActiveChild && !isOpen && !isExpanded
+              ? "text-blue-600 "
+              : "text-muted-foreground hover:text-blue-600  hover:bg-accent hover:text-accent-foreground"
         } ${!isExpanded ? "justify-center" : "gap-3"}`}
       >
         {hasActiveChild && !isOpen && !isExpanded && (
