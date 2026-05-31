@@ -1,0 +1,676 @@
+export interface AccountActivity {
+  id: string;
+  type: "CALL" | "PTP" | "SYSTEM";
+  timestamp: string;
+  agentName?: string;
+  outcome?: string;
+  notes?: string;
+  amount?: number; // For PTP
+  dueDate?: string; // For PTP
+}
+
+export interface LedgerEntry {
+  account_number: string;
+  cid: string;
+  customer_name: string;
+  branch_code: string;
+  loan_class: string;
+  past_due: number;
+  credit_limit: number;
+  usd_equivalent: number;
+  currency: string;
+  cont_date: string;
+  mat_date: string;
+  c_type: string;
+  c_value: number;
+  loan_officer: string;
+  loan_facility: string;
+  buss_type: string;
+  init_loan_officer: string;
+  pro_rate: number;
+  pro_amt: number;
+  tb_accr: number;
+  accr_on_ovr_pr_pe: number;
+  total_accrued: number;
+  ovrdue_pr: number;
+  ovr_int_this_month: number;
+  tot_asset: number;
+  customer_grade: string;
+  rm_name: string;
+  lro_name: string;
+
+  // Monitoring specific fields
+  root_cause?: string;
+  delinquency_status?: string;
+  call_log_report?: string;
+  issuing_letter?: string;
+  recovery_report?: string;
+  possible_solution?: string;
+  specific_solution?: string;
+  solution_status?: string;
+  next_action?: string;
+  expected_date?: string;
+  remarks?: string;
+  last_call_visit_date?: string;
+  action?: string;
+  call_log_file?: string | File;
+  issue_letter_file?: string | File;
+  recovery_report_file?: string | File;
+
+  // New detailed monitoring fields
+  branch_name?: string;
+  division?: string;
+  department?: string;
+  industry_type?: string;
+  business_type?: string;
+  phone_number?: string;
+  reason_loan_default?: string;
+  legal_action?: string;
+  date_approval_legal?: string;
+  legal_stage?: string;
+  remark_legal?: string;
+  date_of_contact?: string;
+  channel_contact?: string;
+  status_call_visit?: string;
+
+  // Scenario A: NOT MEET
+  not_meet_next_action?: string;
+  not_meet_date?: string;
+  not_meet_remark?: string;
+  not_meet_call_log?: string;
+  not_meet_issue_letter?: string;
+  not_meet_delivery_channel?: string;
+  not_meet_date_delivery?: string;
+  not_meet_recovery_report?: string;
+  not_meet_call_log_file?: string | File;
+  not_meet_issue_letter_file?: string | File;
+  not_meet_recovery_report_file?: string | File;
+
+  // Scenario B: MEET
+  meet_possible_solution?: string;
+  meet_specific_resolution?: string;
+  meet_solution_status?: string;
+  meet_expected_date?: string;
+  meet_remark?: string;
+  meet_call_log?: string;
+  meet_issue_letter?: string;
+  meet_delivery_channel?: string;
+  meet_date_delivery?: string;
+  meet_recovery_report?: string;
+  meet_none_solution?: string;
+  meet_action_progress?: string;
+  meet_date_submit?: string;
+  meet_none_remark?: string;
+}
+
+export const SAMPLE_DATA: LedgerEntry[] = [
+  {
+    account_number: "AC-8492-771",
+    cid: "CID-10023",
+    customer_name: "Eleanor Vance",
+    branch_code: "BR-01",
+    loan_class: "Mortgage Tier 1",
+    past_due: 112,
+    credit_limit: 500000,
+    usd_equivalent: 425890.0,
+    currency: "USD",
+    cont_date: "2023-01-15",
+    mat_date: "2043-01-15",
+    c_type: "Residential",
+    c_value: 650000,
+    loan_officer: "Sarah Jenkins",
+    loan_facility: "Home Loan",
+    buss_type: "Retail",
+    init_loan_officer: "John Doe",
+    pro_rate: 4.5,
+    pro_amt: 1916.5,
+    tb_accr: 1250.2,
+    accr_on_ovr_pr_pe: 450.5,
+    total_accrued: 1700.7,
+    ovrdue_pr: 4500.0,
+    ovr_int_this_month: 250.75,
+    tot_asset: 720000,
+    customer_grade: "B+",
+    rm_name: "Robert Smith",
+    lro_name: "LRO-Alpha",
+    root_cause: "Business failure",
+    delinquency_status: "Critical",
+    call_log_report: "Completed",
+    issuing_letter: "Sent",
+    recovery_report: "Pending",
+    possible_solution: "Restructure",
+    specific_solution: "Extend tenor",
+    solution_status: "In Progress",
+    next_action: "Follow up visit",
+    expected_date: "2024-12-25",
+    remarks: "Client cooperative",
+    last_call_visit_date: "2024-12-10",
+    action: "Review",
+  },
+  {
+    account_number: "AC-3310-405",
+    cid: "CID-10045",
+    customer_name: "Marcus Sterling",
+    branch_code: "BR-02",
+    loan_class: "Auto Loan",
+    past_due: 45,
+    credit_limit: 45000,
+    usd_equivalent: 32150.5,
+    currency: "USD",
+    cont_date: "2024-03-10",
+    mat_date: "2029-03-10",
+    c_type: "Vehicle",
+    c_value: 42000,
+    loan_officer: "David Chen",
+    loan_facility: "Auto Finance",
+    buss_type: "Retail",
+    init_loan_officer: "Jane Smith",
+    pro_rate: 6.2,
+    pro_amt: 580.2,
+    tb_accr: 150.4,
+    accr_on_ovr_pr_pe: 45.2,
+    total_accrued: 195.6,
+    ovrdue_pr: 850.0,
+    ovr_int_this_month: 42.15,
+    tot_asset: 48000,
+    customer_grade: "A",
+    rm_name: "Alice Johnson",
+    lro_name: "LRO-Beta",
+    root_cause: "Medical expenses",
+    delinquency_status: "Normal",
+    call_log_report: "Pending",
+    issuing_letter: "N/A",
+    recovery_report: "N/A",
+    possible_solution: "Payment plan",
+    specific_solution: "Monthly installment",
+    solution_status: "Agreed",
+    next_action: "Payment collection",
+    expected_date: "2024-12-30",
+    remarks: "N/A",
+    last_call_visit_date: "2024-12-05",
+    action: "Collect",
+  },
+  {
+    account_number: "AC-9921-118",
+    cid: "CID-10089",
+    customer_name: "Sarah Jenkins",
+    branch_code: "BR-01",
+    loan_class: "Personal Credit",
+    past_due: 14,
+    credit_limit: 15000,
+    usd_equivalent: 8420.0,
+    currency: "USD",
+    cont_date: "2024-11-01",
+    mat_date: "2026-11-01",
+    c_type: "Unsecured",
+    c_value: 0,
+    loan_officer: "Sarah Jenkins",
+    loan_facility: "Personal Loan",
+    buss_type: "Retail",
+    init_loan_officer: "Jane Doe",
+    pro_rate: 12.5,
+    pro_amt: 350.0,
+    tb_accr: 85.1,
+    accr_on_ovr_pr_pe: 0,
+    total_accrued: 85.1,
+    ovrdue_pr: 0,
+    ovr_int_this_month: 0,
+    tot_asset: 8420,
+    customer_grade: "A+",
+    rm_name: "Michael Brown",
+    lro_name: "LRO-Alpha",
+    root_cause: "Job transition",
+    delinquency_status: "Normal",
+    call_log_report: "Completed",
+    issuing_letter: "N/A",
+    recovery_report: "N/A",
+    possible_solution: "Grace period",
+    specific_solution: "Interest only for 1m",
+    solution_status: "Approved",
+    next_action: "Monitor payment",
+    expected_date: "2025-01-05",
+    remarks: "Good credit history",
+    last_call_visit_date: "2024-12-15",
+  },
+  {
+    account_number: "AC-4451-890",
+    cid: "CID-10112",
+    customer_name: "David Chen",
+    branch_code: "BR-03",
+    loan_class: "Commercial Line",
+    past_due: 185,
+    credit_limit: 2000000,
+    usd_equivalent: 1250000.0,
+    currency: "USD",
+    cont_date: "2022-05-20",
+    mat_date: "2027-05-20",
+    c_type: "Commercial Property",
+    c_value: 2500000,
+    loan_officer: "David Chen",
+    loan_facility: "Working Capital",
+    buss_type: "SME",
+    init_loan_officer: "Robert Sterling",
+    pro_rate: 5.8,
+    pro_amt: 5800.0,
+    tb_accr: 3500.4,
+    accr_on_ovr_pr_pe: 1200.6,
+    total_accrued: 4701.0,
+    ovrdue_pr: 12500.0,
+    ovr_int_this_month: 850.4,
+    tot_asset: 2800000,
+    customer_grade: "C",
+    rm_name: "Robert Smith",
+    lro_name: "LRO-SME",
+    root_cause: "Supply chain disruption",
+    delinquency_status: "Alert",
+    call_log_report: "In Progress",
+    issuing_letter: "Sent",
+    recovery_report: "Draft",
+    possible_solution: "Refinance",
+    specific_solution: "Capital injection",
+    solution_status: "Under Review",
+    next_action: "Site visit",
+    expected_date: "2025-01-20",
+    remarks: "High collateral value",
+    last_call_visit_date: "2024-12-20",
+  },
+  {
+    account_number: "AC-5562-112",
+    cid: "CID-10144",
+    customer_name: "Julianna Roa",
+    branch_code: "BR-01",
+    loan_class: "Real Estate",
+    past_due: 0,
+    credit_limit: 750000,
+    usd_equivalent: 620000.0,
+    currency: "USD",
+    cont_date: "2023-06-12",
+    mat_date: "2033-06-12",
+    c_type: "Land",
+    c_value: 850000,
+    loan_officer: "Sarah Jenkins",
+    loan_facility: "Mortgage",
+    buss_type: "Retail",
+    init_loan_officer: "John Doe",
+    pro_rate: 5.2,
+    pro_amt: 3200.0,
+    tb_accr: 1100.0,
+    accr_on_ovr_pr_pe: 0,
+    total_accrued: 1100.0,
+    ovrdue_pr: 0,
+    ovr_int_this_month: 0,
+    tot_asset: 850000,
+    customer_grade: "A++",
+    rm_name: "Michael Brown",
+    lro_name: "LRO-Alpha",
+    root_cause: "N/A",
+    delinquency_status: "Stable",
+    call_log_report: "N/A",
+    issuing_letter: "N/A",
+    recovery_report: "N/A",
+    possible_solution: "N/A",
+    specific_solution: "N/A",
+    solution_status: "N/A",
+    next_action: "Routine review",
+    expected_date: "2025-06-12",
+    remarks: "Excellent performer",
+    last_call_visit_date: "2024-11-30",
+  },
+  {
+    account_number: "AC-7781-990",
+    cid: "CID-10156",
+    customer_name: "Xavier Wright",
+    branch_code: "BR-02",
+    loan_class: "Auto Loan",
+    past_due: 35,
+    credit_limit: 60000,
+    usd_equivalent: 45000.0,
+    currency: "USD",
+    cont_date: "2024-01-20",
+    mat_date: "2028-01-20",
+    c_type: "Vehicle",
+    c_value: 55000,
+    loan_officer: "David Chen",
+    loan_facility: "Auto Finance",
+    buss_type: "Retail",
+    init_loan_officer: "Jane Smith",
+    pro_rate: 6.8,
+    pro_amt: 850.0,
+    tb_accr: 220.0,
+    accr_on_ovr_pr_pe: 45.0,
+    total_accrued: 265.0,
+    ovrdue_pr: 1200.0,
+    ovr_int_this_month: 55.0,
+    tot_asset: 55000,
+    customer_grade: "B",
+    rm_name: "Alice Johnson",
+    lro_name: "LRO-Beta",
+    root_cause: "Overleverage",
+    delinquency_status: "Normal",
+    call_log_report: "Completed",
+    issuing_letter: "Sent",
+    recovery_report: "N/A",
+    possible_solution: "Consolidation",
+    specific_solution: "Debt swap",
+    solution_status: "Discussing",
+    next_action: "Credit committee",
+    expected_date: "2025-01-15",
+    remarks: "Responsive client",
+    last_call_visit_date: "2024-12-18",
+  },
+  {
+    account_number: "AC-1234-567",
+    cid: "CID-10188",
+    customer_name: "Sophia Martinez",
+    branch_code: "BR-03",
+    loan_class: "Corporate Debt",
+    past_due: 12,
+    credit_limit: 5000000,
+    usd_equivalent: 3450000.0,
+    currency: "USD",
+    cont_date: "2021-08-15",
+    mat_date: "2026-08-15",
+    c_type: "Inventory",
+    c_value: 4500000,
+    loan_officer: "David Chen",
+    loan_facility: "Line of Credit",
+    buss_type: "Enterprise",
+    init_loan_officer: "Robert Sterling",
+    pro_rate: 4.2,
+    pro_amt: 12400.0,
+    tb_accr: 6500.0,
+    accr_on_ovr_pr_pe: 0,
+    total_accrued: 6500.0,
+    ovrdue_pr: 0,
+    ovr_int_this_month: 0,
+    tot_asset: 4500000,
+    customer_grade: "AAA",
+    rm_name: "Robert Smith",
+    lro_name: "LRO-SME",
+    root_cause: "N/A",
+    delinquency_status: "Stable",
+    call_log_report: "Monthly",
+    issuing_letter: "N/A",
+    recovery_report: "N/A",
+    possible_solution: "N/A",
+    specific_solution: "N/A",
+    solution_status: "N/A",
+    next_action: "Strategic review",
+    expected_date: "2025-08-15",
+    remarks: "Top tier account",
+    last_call_visit_date: "2024-12-01",
+  },
+  {
+    account_number: "AC-9876-543",
+    cid: "CID-10212",
+    customer_name: "Liam O'Connor",
+    branch_code: "BR-01",
+    loan_class: "Student Loan",
+    past_due: 95,
+    credit_limit: 25000,
+    usd_equivalent: 18000.0,
+    currency: "USD",
+    cont_date: "2020-09-01",
+    mat_date: "2030-09-01",
+    c_type: "Unsecured",
+    c_value: 0,
+    loan_officer: "Sarah Jenkins",
+    loan_facility: "Education Finance",
+    buss_type: "Retail",
+    init_loan_officer: "Jane Doe",
+    pro_rate: 3.5,
+    pro_amt: 75.0,
+    tb_accr: 45.0,
+    accr_on_ovr_pr_pe: 85.0,
+    total_accrued: 130.0,
+    ovrdue_pr: 450.0,
+    ovr_int_this_month: 12.0,
+    tot_asset: 18000,
+    customer_grade: "D",
+    rm_name: "Michael Brown",
+    lro_name: "LRO-Alpha",
+    root_cause: "Unemployment",
+    delinquency_status: "Watch",
+    call_log_report: "Attempted",
+    issuing_letter: "Warning",
+    recovery_report: "Initiated",
+    possible_solution: "Halt interest",
+    specific_solution: "Waiver program",
+    solution_status: "Reviewing",
+    next_action: "Legal notice",
+    expected_date: "2025-01-10",
+    remarks: "Hardship case",
+    last_call_visit_date: "2024-12-22",
+  },
+  {
+    account_number: "AC-4412-332",
+    cid: "CID-10245",
+    customer_name: "Noah Wilson",
+    branch_code: "BR-02",
+    loan_class: "Home Equity",
+    past_due: 0,
+    credit_limit: 150000,
+    usd_equivalent: 85000.0,
+    currency: "USD",
+    cont_date: "2024-05-01",
+    mat_date: "2039-05-01",
+    c_type: "Residential",
+    c_value: 320000,
+    loan_officer: "David Chen",
+    loan_facility: "HELOC",
+    buss_type: "Retail",
+    init_loan_officer: "Jane Smith",
+    pro_rate: 6.5,
+    pro_amt: 650.0,
+    tb_accr: 120.0,
+    accr_on_ovr_pr_pe: 0,
+    total_accrued: 120.0,
+    ovrdue_pr: 0,
+    ovr_int_this_month: 0,
+    tot_asset: 320000,
+    customer_grade: "A",
+    rm_name: "Alice Johnson",
+    lro_name: "LRO-Beta",
+    root_cause: "N/A",
+    delinquency_status: "Normal",
+    call_log_report: "N/A",
+    issuing_letter: "N/A",
+    recovery_report: "N/A",
+    possible_solution: "N/A",
+    specific_solution: "N/A",
+    solution_status: "N/A",
+    next_action: "Annual review",
+    expected_date: "2025-05-01",
+    remarks: "Stable income",
+    last_call_visit_date: "2024-11-25",
+  },
+  {
+    account_number: "AC-8890-112",
+    cid: "CID-10256",
+    customer_name: "Isabella Garcia",
+    branch_code: "BR-01",
+    loan_class: "Micro Credit",
+    past_due: 5,
+    credit_limit: 5000,
+    usd_equivalent: 3200.0,
+    currency: "USD",
+    cont_date: "2024-11-20",
+    mat_date: "2025-11-20",
+    c_type: "Unsecured",
+    c_value: 0,
+    loan_officer: "Sarah Jenkins",
+    loan_facility: "Express Loan",
+    buss_type: "SME",
+    init_loan_officer: "Jane Doe",
+    pro_rate: 15.0,
+    pro_amt: 120.0,
+    tb_accr: 15.0,
+    accr_on_ovr_pr_pe: 0,
+    total_accrued: 15.0,
+    ovrdue_pr: 0,
+    ovr_int_this_month: 0,
+    tot_asset: 3200,
+    customer_grade: "B+",
+    rm_name: "Michael Brown",
+    lro_name: "LRO-Alpha",
+    root_cause: "Inventory delay",
+    delinquency_status: "Near Normal",
+    call_log_report: "Completed",
+    issuing_letter: "Reminder",
+    recovery_report: "N/A",
+    possible_solution: "Short extension",
+    specific_solution: "+15 days boost",
+    solution_status: "Agreed",
+    next_action: "Repayment check",
+    expected_date: "2025-01-02",
+    remarks: "Micro-business",
+    last_call_visit_date: "2024-12-24",
+  },
+  {
+    account_number: "AC-1122-334",
+    cid: "CID-10300",
+    customer_name: "Ethan Hunt",
+    branch_code: "BR-03",
+    loan_class: "Venture Debt",
+    past_due: 0,
+    credit_limit: 10000000,
+    usd_equivalent: 8500000.0,
+    currency: "USD",
+    cont_date: "2023-12-01",
+    mat_date: "2028-12-01",
+    c_type: "IP",
+    c_value: 12000000,
+    loan_officer: "David Chen",
+    loan_facility: "Growth Capital",
+    buss_type: "Enterprise",
+    init_loan_officer: "Robert Sterling",
+    pro_rate: 9.5,
+    pro_amt: 85000.0,
+    tb_accr: 42000.0,
+    accr_on_ovr_pr_pe: 0,
+    total_accrued: 42000.0,
+    ovrdue_pr: 0,
+    ovr_int_this_month: 0,
+    tot_asset: 12000000,
+    customer_grade: "A+",
+    rm_name: "Robert Smith",
+    lro_name: "LRO-SME",
+    root_cause: "N/A",
+    delinquency_status: "Premium",
+    call_log_report: "Quarterly",
+    issuing_letter: "N/A",
+    recovery_report: "N/A",
+    possible_solution: "N/A",
+    specific_solution: "N/A",
+    solution_status: "N/A",
+    next_action: "Relationship mtg",
+    expected_date: "2025-03-01",
+    remarks: "High growth potential",
+    last_call_visit_date: "2024-12-10",
+  },
+  {
+    account_number: "AC-5544-332",
+    cid: "CID-10421",
+    customer_name: "Mia Thompson",
+    branch_code: "BR-01",
+    loan_class: "Retail Mortgage",
+    past_due: 120,
+    credit_limit: 300000,
+    usd_equivalent: 245000.0,
+    currency: "USD",
+    cont_date: "2022-02-14",
+    mat_date: "2042-02-14",
+    c_type: "Residential",
+    c_value: 350000,
+    loan_officer: "Sarah Jenkins",
+    loan_facility: "Home Purchase",
+    buss_type: "Retail",
+    init_loan_officer: "John Doe",
+    pro_rate: 4.8,
+    pro_amt: 1450.0,
+    tb_accr: 1200.0,
+    accr_on_ovr_pr_pe: 650.0,
+    total_accrued: 1850.0,
+    ovrdue_pr: 3200.0,
+    ovr_int_this_month: 145.0,
+    tot_asset: 350000,
+    customer_grade: "C+",
+    rm_name: "Michael Brown",
+    lro_name: "LRO-Alpha",
+    root_cause: "Family emergency",
+    delinquency_status: "Under Watch",
+    call_log_report: "Weekly",
+    issuing_letter: "Final Sent",
+    recovery_report: "Pending",
+    possible_solution: "Loan restruct",
+    specific_solution: "Lower rate",
+    solution_status: "Finalizing",
+    next_action: "Legal advice",
+    expected_date: "2025-01-15",
+    remarks: "Seeking partial payment",
+    last_call_visit_date: "2024-12-26",
+  },
+];
+
+export const ALL_COLUMNS: {
+  key: keyof LedgerEntry;
+  label: string;
+  mandatory?: boolean;
+}[] = [
+  { key: "account_number", label: "accno", mandatory: true },
+  { key: "customer_name", label: "actualreportdate", mandatory: true },
+  { key: "cid", label: "cid", mandatory: true },
+  { key: "branch_code", label: "cat2", mandatory: true },
+  { key: "past_due", label: "category", mandatory: true },
+  { key: "usd_equivalent", label: "sector", mandatory: true },
+  { key: "loan_class", label: "loanclass" },
+  { key: "credit_limit", label: "creditlimit" },
+  { key: "customer_grade", label: "accountofficer" },
+  { key: "loan_officer", label: "ovrintthismonth" },
+
+  { key: "cont_date", label: "contdate" },
+  { key: "mat_date", label: "matdate" },
+  { key: "currency", label: "terminmonth" },
+  { key: "c_type", label: "longtermyn" },
+  { key: "c_value", label: "intrate" },
+  { key: "loan_facility", label: "paidint" },
+  { key: "buss_type", label: "paidpr" },
+  { key: "init_loan_officer", label: "riskrate" },
+  { key: "pro_rate", label: "balfwd" },
+  { key: "pro_amt", label: "balance" },
+  { key: "tb_accr", label: "ovrdueday" },
+  { key: "accr_on_ovr_pr_pe", label: "ovrdueterm" },
+  { key: "total_accrued", label: "oddint" },
+  { key: "ovrdue_pr", label: "tbaccr" },
+  { key: "ovr_int_this_month", label: "repaytype" },
+  { key: "tot_asset", label: "nbcindustry" },
+  { key: "rm_name", label: "busstype" },
+  { key: "lro_name", label: "subac" },
+];
+
+export const MONITORING_COLUMNS: {
+  key: keyof LedgerEntry;
+  label: string;
+  mandatory?: boolean;
+}[] = [
+  { key: "account_number", label: "Account Num", mandatory: true },
+  { key: "cid", label: "CID", mandatory: true },
+  { key: "customer_name", label: "Customer Name", mandatory: true },
+  { key: "root_cause", label: "ROUT COURSE OF LOAN DEFAULT", mandatory: true },
+  { key: "delinquency_status", label: "DILIQUINCE STATUS", mandatory: true },
+  { key: "call_log_report", label: "Call log report" },
+  { key: "issuing_letter", label: "Issuing Letter" },
+  { key: "recovery_report", label: "Recovery Report" },
+  { key: "possible_solution", label: "Possible Solution" },
+  { key: "specific_solution", label: "Specific Solution" },
+  { key: "solution_status", label: "Solution status" },
+  { key: "next_action", label: "Next Action" },
+  { key: "expected_date", label: "Exspected Date" },
+  { key: "remarks", label: "Remarks" },
+  { key: "last_call_visit_date", label: "Last Call/Visit Date" },
+];
+
+export const DEFAULT_VISIBLE = ALL_COLUMNS.slice(0, 6).map((c) => c.key);
+export const DEFAULT_VISIBLE_MONITORING = MONITORING_COLUMNS.slice(0, 6).map(
+  (c) => c.key,
+);
