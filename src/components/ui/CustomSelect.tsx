@@ -53,7 +53,7 @@ export function CustomSelect({
           {icon}
         </span>
       )}
-      <div className="flex-1 text-[10px] font-bold uppercase tracking-widest text-foreground relative top-[0.5px] truncate">
+      <div className={`flex-1 text-[10px] font-bold uppercase tracking-widest relative top-[0.5px] truncate ${value ? "text-slate-500" : "text-foreground"}`}>
         {selectedLabel}
       </div>
       <span
@@ -87,9 +87,7 @@ export function CustomSelect({
               >
                 {opt.label}
                 {value === opt.value && (
-                  <span className="material-symbols-outlined text-[14px]">
-                    check
-                  </span>
+                  <div className="w-2 h-2 rounded-full bg-slate-500 shadow-[0_0_6px_rgba(100,116,139,0.4)]"></div>
                 )}
               </div>
             ))}

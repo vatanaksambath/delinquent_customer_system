@@ -15,7 +15,16 @@ import "react-day-picker/style.css";
 import { motion, AnimatePresence } from "motion/react";
 import { Calendar as CalendarIcon, ChevronDown } from "lucide-react";
 
-export function CustomDatePicker({ value, onChange, className = "", label, required = false }: any) {
+export interface CustomDatePickerProps {
+  value?: string;
+  onChange: (date: string) => void;
+  className?: string;
+  label?: string;
+  required?: boolean;
+  align?: "left" | "right";
+}
+
+export function CustomDatePicker({ value, onChange, className = "", label, required = false, align = "left" }: CustomDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -91,7 +100,7 @@ export function CustomDatePicker({ value, onChange, className = "", label, requi
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.98 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute left-0 top-[calc(100%+8px)] bg-card border border-border rounded-xl shadow-2xl z-[150] flex overflow-hidden w-auto"
+            className={`absolute ${align === "right" ? "right-0" : "left-0"} top-[calc(100%+8px)] bg-card border border-border rounded-xl shadow-2xl z-[150] flex overflow-hidden w-auto`}
           >
             <style>{`
               .rdp-root {

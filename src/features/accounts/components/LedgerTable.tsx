@@ -202,13 +202,14 @@ const ExportDropdown = ({ data }: { data: any[] }) => {
     <div ref={ref} className="relative shrink-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 h-9 px-3 bg-primary hover:brightness-110 text-on-primary rounded-lg text-[9px] font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer whitespace-nowrap"
+        className="flex items-center gap-1.5 h-9 px-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all shadow-sm hover:shadow-md cursor-pointer whitespace-nowrap focus:ring-2 focus:ring-blue-500/30 outline-none"
       >
-        <span className="material-symbols-outlined text-[18px]">download</span>
+        <span className="material-symbols-outlined text-[16px]">download</span>
         Export
         <motion.span
           animate={{ rotate: isOpen ? 180 : 0 }}
-          className="material-symbols-outlined text-xs"
+          transition={{ duration: 0.2 }}
+          className="material-symbols-outlined text-[16px] ml-1 opacity-80"
         >
           expand_more
         </motion.span>
@@ -217,41 +218,36 @@ const ExportDropdown = ({ data }: { data: any[] }) => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="absolute right-0 top-full mt-2 w-48 bg-card  border border-border  rounded-xl shadow-2xl z-[150] overflow-hidden py-2"
+            initial={{ opacity: 0, y: 10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.98 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+            className="absolute right-0 top-[calc(100%+6px)] w-48 bg-card border border-border rounded-xl shadow-xl z-[150] overflow-hidden py-1.5 flex flex-col"
           >
             <button
               onClick={() => handleExport("csv")}
-              className="w-full flex items-center justify-between px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-foreground hover:bg-primary/10 hover:text-primary transition-all text-left"
+              className="w-full flex items-center px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-foreground hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left group"
             >
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-lg opacity-60">
+              <div className="flex items-center gap-2.5 w-full">
+                <span className="material-symbols-outlined text-[18px] text-blue-500 group-hover:scale-110 transition-transform duration-200">
                   csv
                 </span>
-                Export as CSV
+                <span className="flex-1 mt-0.5">Export CSV</span>
               </div>
-              <span className="material-symbols-outlined text-sm opacity-20">
-                chevron_right
-              </span>
             </button>
-            <div className="mx-4 h-[1px] bg-outline/20"></div>
+            <div className="mx-3 my-0.5 h-[1px] bg-border"></div>
             <button
               onClick={() => handleExport("xlsx")}
-              className="w-full flex items-center justify-between px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-foreground hover:bg-primary/10 hover:text-primary transition-all text-left"
+              className="w-full flex items-center px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-foreground hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left group"
             >
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-lg opacity-60">
+              <div className="flex items-center gap-2.5 w-full">
+                <span className="material-symbols-outlined text-[18px] text-emerald-500 group-hover:scale-110 transition-transform duration-200">
                   table_chart
                 </span>
-                Export as XLSX
+                <span className="flex-1 mt-0.5">Export Excel</span>
               </div>
-              <span className="material-symbols-outlined text-sm opacity-20">
-                chevron_right
-              </span>
             </button>
-            <div className="mx-4 h-[1px] bg-outline/20"></div>
+            <div className="mx-3 my-0.5 h-[1px] bg-border"></div>
             <button
               onClick={() => {
                 window.focus();
@@ -260,17 +256,14 @@ const ExportDropdown = ({ data }: { data: any[] }) => {
                   window.print();
                 }, 20);
               }}
-              className="w-full flex items-center justify-between px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-foreground hover:bg-primary/10 hover:text-primary transition-all text-left"
+              className="w-full flex items-center px-3 py-2 text-[11px] font-bold uppercase tracking-widest text-foreground hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left group"
             >
-              <div className="flex items-center gap-3">
-                <span className="material-symbols-outlined text-lg opacity-60">
+              <div className="flex items-center gap-2.5 w-full">
+                <span className="material-symbols-outlined text-[18px] text-slate-500 group-hover:scale-110 transition-transform duration-200">
                   print
                 </span>
-                Print Table
+                <span className="flex-1 mt-0.5">Print Table</span>
               </div>
-              <span className="material-symbols-outlined text-sm opacity-20">
-                chevron_right
-              </span>
             </button>
           </motion.div>
         )}

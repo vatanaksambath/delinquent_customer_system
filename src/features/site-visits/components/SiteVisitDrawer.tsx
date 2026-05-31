@@ -123,14 +123,14 @@ const Switch = ({
     type="button"
     onClick={() => onChange(!checked)}
     className={cn(
-      "w-12 h-6 rounded-full transition-all duration-300 relative flex items-center shrink-0 cursor-pointer border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2",
-      checked ? "bg-primary shadow-md shadow-primary/30" : "bg-slate-300 dark:bg-slate-600",
+      "relative w-[42px] h-[24px] rounded-full transition-colors duration-300 ease-in-out shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 shadow-inner",
+      checked ? "bg-blue-600" : "bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600",
     )}
   >
     <span
       className={cn(
-        "w-5 h-5 bg-white rounded-full transition-transform duration-300 shadow-sm absolute top-0.5",
-        checked ? "translate-x-[26px]" : "translate-x-0.5",
+        "absolute top-[2px] left-[2px] bg-white rounded-full transition-all duration-300 ease-out shadow-[0_2px_5px_rgba(0,0,0,0.2)]",
+        checked ? "w-5 h-5 translate-x-[18px]" : "w-5 h-5 translate-x-0",
       )}
     />
   </button>
@@ -231,14 +231,14 @@ export function SiteVisitDrawer({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-foreground/60 backdrop-blur-sm z-40 transition-opacity"
+            className="fixed inset-0 bg-slate-900/15 dark:bg-slate-900/70 backdrop-blur-[8px] z-40 transition-opacity"
           />
           <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-y-0 right-0 w-full max-w-4xl bg-muted  shadow-2xl z-50 flex flex-col border-l border-border font-sans"
+            initial={{ x: "100%", opacity: 0.5 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: "100%", opacity: 0.5 }}
+            transition={{ type: "spring", damping: 30, stiffness: 300, mass: 0.8 }}
+            className="fixed inset-y-0 right-0 w-full max-w-4xl bg-slate-50/95 dark:bg-background/95 backdrop-blur-2xl shadow-[0_0_40px_rgba(0,0,0,0.1)] z-50 flex flex-col border-l border-white/20 dark:border-border font-sans"
           >
             <form
               onSubmit={handleSubmit(onSubmit)}
@@ -737,6 +737,7 @@ export function SiteVisitDrawer({
                                   <CustomDatePicker
                                     value={field.value}
                                     onChange={field.onChange}
+                                    align="right"
                                     className={cn(
                                       "w-full h-10 text-sm",
                                       errors.actionDate && "border-red-300 ring-1 ring-red-500/20"

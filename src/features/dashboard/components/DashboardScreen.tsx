@@ -163,7 +163,7 @@ const ModernDropdown = React.memo(
           onClick={() => setIsOpen(!isOpen)}
           className="glass-panel h-10 px-3 flex items-center justify-between cursor-pointer rounded-lg bg-card "
         >
-          <span className="text-[11px] font-medium text-foreground truncate">
+          <span className={`text-[11px] font-bold truncate ${value ? "text-slate-500" : "text-foreground font-medium"}`}>
             {selectedLabel}
           </span>
           <span
@@ -193,9 +193,12 @@ const ModernDropdown = React.memo(
                       onChange(opt.id);
                       setIsOpen(false);
                     }}
-                    className={`px-3 py-2 text-[11px] cursor-pointer transition-colors ${value === opt.id ? "bg-primary/10 text-primary font-bold" : "hover:bg-primary/5 text-foreground"}`}
+                    className={`px-3 py-2 text-[11px] cursor-pointer transition-colors flex items-center justify-between ${value === opt.id ? "bg-primary/10 text-primary font-bold" : "hover:bg-primary/5 text-foreground"}`}
                   >
-                    {opt.label}
+                    <span>{opt.label}</span>
+                    {value === opt.id && (
+                      <div className="w-2 h-2 rounded-full bg-slate-500 shadow-[0_0_6px_rgba(100,116,139,0.4)] ml-2"></div>
+                    )}
                   </div>
                 ))}
               </motion.div>
