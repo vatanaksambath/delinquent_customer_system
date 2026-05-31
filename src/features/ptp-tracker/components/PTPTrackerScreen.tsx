@@ -1,5 +1,6 @@
-﻿import React, { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 import { ExportDropdown } from "@/features/accounts/components/LedgerTable";
 import {
   Search,
@@ -692,48 +693,48 @@ export default function PTPTrackerScreen() {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                          <select
-                            className="w-full bg-card  border border-border  rounded-lg px-3 py-2 text-sm text-foreground outline-none focus:border-primary transition-colors shadow-sm"
+                          <CustomSelect
                             value={filterDraft.field}
-                            onChange={(e) =>
+                            onChange={(val) =>
                               setFilterDraft({
                                 ...filterDraft,
-                                field: e.target.value,
+                                field: val,
                                 operator:
-                                  e.target.value === "assignedAgent"
+                                  val === "assignedAgent"
                                     ? "contains"
                                     : "gt",
                                 value: "",
                               })
                             }
-                          >
-                            <option value="amount">Amount ($)</option>
-                            <option value="assignedAgent">Agent Name</option>
-                            <option value="brokenCount">Broken Count</option>
-                          </select>
-                          <select
-                            className="w-full bg-card  border border-border  rounded-lg px-3 py-2 text-sm text-foreground outline-none focus:border-primary transition-colors shadow-sm"
+                            options={[
+                              { value: "amount", label: "Amount ($)" },
+                              { value: "assignedAgent", label: "Agent Name" },
+                              { value: "brokenCount", label: "Broken Count" },
+                            ]}
+                            className="w-full h-10 text-sm justify-between shadow-sm"
+                          />
+                          <CustomSelect
                             value={filterDraft.operator}
-                            onChange={(e) =>
+                            onChange={(val) =>
                               setFilterDraft({
                                 ...filterDraft,
-                                operator: e.target.value,
+                                operator: val,
                               })
                             }
-                          >
-                            {filterDraft.field === "assignedAgent" ? (
-                              <>
-                                <option value="contains">Contains</option>
-                                <option value="eq">Is Exact</option>
-                              </>
-                            ) : (
-                              <>
-                                <option value="gt">Greater Than</option>
-                                <option value="lt">Less Than</option>
-                                <option value="eq">Equals</option>
-                              </>
-                            )}
-                          </select>
+                            options={
+                              filterDraft.field === "assignedAgent"
+                                ? [
+                                    { value: "contains", label: "Contains" },
+                                    { value: "eq", label: "Is Exact" },
+                                  ]
+                                : [
+                                    { value: "gt", label: "Greater Than" },
+                                    { value: "lt", label: "Less Than" },
+                                    { value: "eq", label: "Equals" },
+                                  ]
+                            }
+                            className="w-full h-10 text-sm justify-between shadow-sm"
+                          />
                           <input
                             type={
                               filterDraft.field === "assignedAgent"

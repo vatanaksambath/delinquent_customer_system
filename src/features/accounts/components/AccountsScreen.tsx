@@ -1,4 +1,4 @@
-﻿import { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { StatCard } from "@/features/dashboard/components/StatCard";
 import LedgerTable, {
@@ -116,7 +116,7 @@ export default function AccountsScreen({
       exit={{ opacity: 0, y: -10 }}
       className="flex flex-col gap-4 h-full overflow-hidden px-8"
     >
-      <div className="flex justify-between items-end pb-1 mt-6 shrink-0">
+      <div className="flex flex-wrap justify-between items-end pb-1 mt-6 shrink-0 gap-3">
         <div>
           <p className="text-[9px] text-primary font-bold mb-0.5 uppercase tracking-[0.3em]">
             Recovery Management
@@ -136,7 +136,7 @@ export default function AccountsScreen({
               setCurrentPage(1);
             }}
             title="Refresh"
-            className="w-9 h-9 flex items-center justify-center rounded-lg border border-border  bg-card  text-muted-foreground hover:text-primary shrink-0"
+            className="w-9 h-9 flex items-center justify-center rounded-lg border border-border bg-card text-muted-foreground hover:text-primary hover:border-primary/40 shrink-0 cursor-pointer transition-all duration-200"
           >
             <span className="material-symbols-outlined text-[18px]">
               refresh
@@ -145,10 +145,10 @@ export default function AccountsScreen({
           <button
             onClick={() => setShowFilters(!showFilters)}
             title="Toggle Filters"
-            className={`w-9 h-9 flex items-center justify-center rounded-lg border shrink-0 ${
+            className={`w-9 h-9 flex items-center justify-center rounded-lg border shrink-0 cursor-pointer transition-all duration-200 ${
               showFilters
                 ? "bg-primary/10 border-primary text-primary"
-                : "bg-card  border-border  text-muted-foreground"
+                : "bg-card border-border text-muted-foreground hover:text-primary hover:border-primary/40"
             }`}
           >
             <span className="material-symbols-outlined text-[18px]">tune</span>
@@ -158,7 +158,7 @@ export default function AccountsScreen({
 
           <button
             onClick={() => setShowColumnPicker(true)}
-            className="h-9 flex items-center gap-2 px-3 bg-card  border border-border  text-muted-foreground hover:border-primary/40 hover:text-primary rounded-lg text-[9px] font-bold uppercase tracking-wider shrink-0"
+            className="h-9 flex items-center gap-2 px-3 bg-card border border-border text-muted-foreground hover:border-primary/40 hover:text-primary rounded-lg text-[9px] font-bold uppercase tracking-wider shrink-0 cursor-pointer transition-all duration-200"
           >
             <span className="material-symbols-outlined text-[16px]">
               view_column
@@ -312,10 +312,12 @@ export default function AccountsScreen({
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           <StatCard
             title="Total Accounts"
+            icon="manage_accounts"
             value={filteredData.length.toString()}
           />
           <StatCard
             title="Total Exposure"
+            icon="account_balance_wallet"
             value={new Intl.NumberFormat("en-US", {
               style: "currency",
               currency: "USD",
@@ -326,6 +328,7 @@ export default function AccountsScreen({
           />
           <StatCard
             variant="error"
+            icon="warning"
             title="Total Overdue"
             value={new Intl.NumberFormat("en-US", {
               style: "currency",
@@ -337,6 +340,7 @@ export default function AccountsScreen({
           />
           <StatCard
             title="Avg. Pro Rate"
+            icon="percent"
             value={
               (filteredData.length
                 ? filteredData.reduce((acc, curr) => acc + curr.pro_rate, 0) /

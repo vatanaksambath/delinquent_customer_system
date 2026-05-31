@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import {
   Phone,
@@ -13,7 +13,9 @@ import {
   Navigation,
   MapPin,
   Lock,
+  ChevronLeft,
 } from "lucide-react";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 import { AccountActivity } from "@/types";
 import { SiteVisitDrawer } from "@/features/site-visits/components/SiteVisitDrawer";
 
@@ -439,49 +441,35 @@ export default function AccountDetailScreen({
                 <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1.5 ml-1">
                   Channel
                 </label>
-                <div className="relative">
-                  <select
+                  <CustomSelect
                     value={channel}
-                    onChange={(e) => {
-                      setChannel(e.target.value);
-                      if (e.target.value !== "Site Visit") {
+                    onChange={(val) => {
+                      setChannel(val);
+                      if (val !== "Site Visit") {
                         setSiteVisitData(null); // Clear data if changed
                       }
                     }}
-                    className="w-full bg-card  border border-border  rounded-lg h-10 px-3 text-xs font-bold text-foreground appearance-none focus:outline-none focus:border-primary shadow-sm"
-                  >
-                    <option value="Call">Call</option>
-                    <option value="SMS">SMS</option>
-                    <option value="Email">Email</option>
-                    <option value="Site Visit">Site Visit</option>
-                  </select>
-                  <span className="material-symbols-outlined absolute right-2 top-2 text-muted-foreground pointer-events-none">
-                    expand_more
-                  </span>
-                </div>
+                    options={["Call", "SMS", "Email", "Site Visit"]}
+                    className="w-full h-10 text-xs justify-between shadow-sm"
+                  />
               </div>
 
               <div className="w-40 shrink-0">
                 <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1.5 ml-1">
                   Outcome
                 </label>
-                <div className="relative">
-                  <select
-                    name="outcome"
+                  <CustomSelect
                     value={outcome}
-                    onChange={(e) => setOutcome(e.target.value)}
-                    className="w-full bg-card  border border-border  rounded-lg h-10 px-3 text-xs font-bold text-foreground appearance-none focus:outline-none focus:border-primary shadow-sm"
-                  >
-                    <option>Contacted</option>
-                    <option>No Answer</option>
-                    <option>Left Message</option>
-                    <option>Broken Promise Follow-up</option>
-                    <option>Refusal / Dispute</option>
-                  </select>
-                  <span className="material-symbols-outlined absolute right-2 top-2 text-muted-foreground pointer-events-none">
-                    expand_more
-                  </span>
-                </div>
+                    onChange={setOutcome}
+                    options={[
+                      "Contacted",
+                      "No Answer",
+                      "Left Message",
+                      "Broken Promise Follow-up",
+                      "Refusal / Dispute",
+                    ]}
+                    className="w-full h-10 text-xs justify-between shadow-sm"
+                  />
               </div>
 
               <div className="flex-1 relative">

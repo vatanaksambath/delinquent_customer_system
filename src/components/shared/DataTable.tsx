@@ -23,10 +23,10 @@ export function DataTable<T>({
       className={`w-full overflow-auto rounded-md border border-border ${className}`}
     >
       <table className="w-full text-sm text-left">
-        <thead className="bg-muted text-muted-foreground text-xs uppercase font-semibold">
+        <thead className="bg-muted/80 text-muted-foreground text-[9px] uppercase font-bold tracking-[0.2em]">
           <tr>
             {columns.map((col, i) => (
-              <th key={i} className="px-4 py-3 whitespace-nowrap">
+              <th key={i} className="px-4 py-3.5 whitespace-nowrap border-b border-border">
                 {col.header}
               </th>
             ))}
@@ -37,19 +37,25 @@ export function DataTable<T>({
             <tr>
               <td
                 colSpan={columns.length}
-                className="px-4 py-8 text-center text-muted-foreground"
+                className="px-4 py-20 text-center"
               >
-                No data available
+                <div className="flex flex-col items-center justify-center gap-3">
+                  <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center">
+                    <span className="material-symbols-outlined text-3xl text-muted-foreground/50">table_rows</span>
+                  </div>
+                  <p className="text-sm font-bold text-foreground/70 uppercase tracking-widest">No Data Available</p>
+                  <p className="text-xs text-muted-foreground max-w-xs">There are no records matching your current criteria. Try adjusting your filters.</p>
+                </div>
               </td>
             </tr>
           ) : (
             data.map((item, i) => (
               <tr
                 key={i}
-                className="bg-card hover:bg-muted/50 transition-colors"
+                className="bg-card hover:bg-primary/5 transition-colors cursor-pointer group"
               >
                 {columns.map((col, j) => (
-                  <td key={j} className="px-4 py-3 whitespace-nowrap">
+                  <td key={j} className="px-4 py-3.5 whitespace-nowrap text-[11px] font-medium text-foreground/80 group-hover:text-foreground transition-colors">
                     {col.cell
                       ? col.cell(item)
                       : String(item[col.accessorKey] ?? "")}

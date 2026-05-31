@@ -13,6 +13,8 @@ import {
   Calendar,
   FileText,
 } from "lucide-react";
+import { CustomSelect } from "@/components/ui/CustomSelect";
+import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -121,14 +123,14 @@ const Switch = ({
     type="button"
     onClick={() => onChange(!checked)}
     className={cn(
-      "w-11 h-6 rounded-full transition-colors relative flex items-center shrink-0 cursor-pointer border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2",
-      checked ? "bg-indigo-600" : "bg-accent",
+      "w-12 h-6 rounded-full transition-all duration-300 relative flex items-center shrink-0 cursor-pointer border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2",
+      checked ? "bg-primary shadow-md shadow-primary/30" : "bg-slate-300 dark:bg-slate-600",
     )}
   >
     <span
       className={cn(
-        "w-5 h-5 bg-card rounded-full transition-transform shadow-sm",
-        checked ? "translate-x-5" : "translate-x-0",
+        "w-5 h-5 bg-white rounded-full transition-transform duration-300 shadow-sm absolute top-0.5",
+        checked ? "translate-x-[26px]" : "translate-x-0.5",
       )}
     />
   </button>
@@ -344,14 +346,18 @@ export function SiteVisitDrawer({
                             Date of Site Visit{" "}
                             <span className="text-red-500">*</span>
                           </label>
-                          <input
-                            type="date"
-                            {...register("dateOfVisit")}
-                            className={cn(
-                              "w-full bg-card  border rounded-lg h-10 px-3 text-sm focus:outline-none focus:ring-2 transition-shadow",
-                              errors.dateOfVisit
-                                ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
-                                : "border-border  focus:border-indigo-500 focus:ring-indigo-500/20",
+                          <Controller
+                            name="dateOfVisit"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomDatePicker
+                                value={field.value}
+                                onChange={field.onChange}
+                                className={cn(
+                                  "w-full h-10 text-sm",
+                                  errors.dateOfVisit && "border-red-300 ring-1 ring-red-500/20"
+                                )}
+                              />
                             )}
                           />
                           {errors.dateOfVisit && (
@@ -365,29 +371,26 @@ export function SiteVisitDrawer({
                             Site Visit Participant{" "}
                             <span className="text-red-500">*</span>
                           </label>
-                          <div className="relative">
-                            <select
-                              {...register("participant")}
-                              className={cn(
-                                "w-full bg-card  border rounded-lg h-10 pl-3 pr-10 text-sm focus:outline-none focus:ring-2 transition-shadow appearance-none",
-                                errors.participant
-                                  ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
-                                  : "border-border  focus:border-indigo-500 focus:ring-indigo-500/20",
-                              )}
-                            >
-                              <option value="RM">
-                                RM (Relationship Manager)
-                              </option>
-                              <option value="BM">BM (Branch Manager)</option>
-                              <option value="LRO">
-                                LRO (Loan Recovery Officer)
-                              </option>
-                              <option value="Multiple">
-                                Multiple Managers
-                              </option>
-                            </select>
-                            <ChevronRight className="w-4 h-4 text-muted-foreground absolute right-3 top-3 pointer-events-none rotate-90" />
-                          </div>
+                          <Controller
+                            name="participant"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomSelect
+                                value={field.value}
+                                onChange={field.onChange}
+                                options={[
+                                  { value: "RM", label: "RM (Relationship Manager)" },
+                                  { value: "BM", label: "BM (Branch Manager)" },
+                                  { value: "LRO", label: "LRO (Loan Recovery Officer)" },
+                                  { value: "Multiple", label: "Multiple Managers" },
+                                ]}
+                                className={cn(
+                                  "w-full h-10 text-sm justify-between",
+                                  errors.participant && "border-red-300 ring-1 ring-red-500/20"
+                                )}
+                              />
+                            )}
+                          />
                           {errors.participant && (
                             <p className="text-red-500 text-xs mt-1.5 font-medium">
                               {errors.participant.message}
@@ -502,24 +505,27 @@ export function SiteVisitDrawer({
                           Status of Borrower{" "}
                           <span className="text-red-500">*</span>
                         </label>
-                        <div className="relative md:w-1/2">
-                          <select
-                            {...register("borrowerStatus")}
-                            className={cn(
-                              "w-full bg-card  border rounded-lg h-10 pl-3 pr-10 text-sm focus:outline-none focus:ring-2 transition-shadow appearance-none",
-                              errors.borrowerStatus
-                                ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
-                                : "border-border  focus:border-indigo-500 focus:ring-indigo-500/20",
-                            )}
-                          >
-                            <option value="Single">Single</option>
-                            <option value="Married">Married</option>
-                            <option value="Divorced">Divorced</option>
-                            <option value="Deceased">Deceased</option>
-                            <option value="Fled">Fled/Unreachable</option>
-                          </select>
-                          <ChevronRight className="w-4 h-4 text-muted-foreground absolute right-3 top-3 pointer-events-none rotate-90" />
-                        </div>
+                        <Controller
+                          name="borrowerStatus"
+                          control={control}
+                          render={({ field }) => (
+                            <CustomSelect
+                              value={field.value}
+                              onChange={field.onChange}
+                              options={[
+                                { value: "Single", label: "Single" },
+                                { value: "Married", label: "Married" },
+                                { value: "Divorced", label: "Divorced" },
+                                { value: "Deceased", label: "Deceased" },
+                                { value: "Fled", label: "Fled/Unreachable" }
+                              ]}
+                              className={cn(
+                                "w-full h-10 text-sm justify-between md:w-1/2",
+                                errors.borrowerStatus && "border-red-300 ring-1 ring-red-500/20"
+                              )}
+                            />
+                          )}
+                        />
                         {errors.borrowerStatus && (
                           <p className="text-red-500 text-xs mt-1.5 font-medium">
                             {errors.borrowerStatus.message}
@@ -702,28 +708,21 @@ export function SiteVisitDrawer({
                               Ability to Resolve{" "}
                               <span className="text-red-500">*</span>
                             </label>
-                            <div className="relative">
-                              <select
-                                {...register("abilityToResolve")}
-                                className={cn(
-                                  "w-full bg-card  border rounded-lg h-10 pl-3 pr-10 text-sm focus:outline-none focus:ring-2 transition-shadow appearance-none",
-                                  errors.abilityToResolve
-                                    ? "border-red-300 focus:ring-red-500/20"
-                                    : "border-border  focus:border-indigo-500 focus:ring-indigo-500/20",
-                                )}
-                              >
-                                <option value="Restructure">Restructure</option>
-                                <option value="Partial Payment">
-                                  Partial Payment
-                                </option>
-                                <option value="Foreclosure">Foreclosure</option>
-                                <option value="Write-off">Write-off</option>
-                                <option value="Legal Action">
-                                  Legal Action
-                                </option>
-                              </select>
-                              <ChevronRight className="w-4 h-4 text-muted-foreground absolute right-3 top-3 pointer-events-none rotate-90" />
-                            </div>
+                            <Controller
+                              name="abilityToResolve"
+                              control={control}
+                              render={({ field }) => (
+                                <CustomSelect
+                                  value={field.value}
+                                  onChange={field.onChange}
+                                  options={["Restructure", "Partial Payment", "Foreclosure", "Write-off", "Legal Action"]}
+                                  className={cn(
+                                    "w-full h-10 text-sm justify-between",
+                                    errors.abilityToResolve && "border-red-300 ring-1 ring-red-500/20"
+                                  )}
+                                />
+                              )}
+                            />
                           </div>
 
                           <div>
@@ -731,14 +730,18 @@ export function SiteVisitDrawer({
                               Action Date
                             </label>
                             <div className="relative">
-                              <input
-                                type="date"
-                                {...register("actionDate")}
-                                className={cn(
-                                  "w-full bg-card  border rounded-lg h-10 px-3 text-sm focus:outline-none focus:ring-2 transition-shadow",
-                                  errors.actionDate
-                                    ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
-                                    : "border-border  focus:border-indigo-500 focus:ring-indigo-500/20",
+                              <Controller
+                                name="actionDate"
+                                control={control}
+                                render={({ field }) => (
+                                  <CustomDatePicker
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    className={cn(
+                                      "w-full h-10 text-sm",
+                                      errors.actionDate && "border-red-300 ring-1 ring-red-500/20"
+                                    )}
+                                  />
                                 )}
                               />
                             </div>

@@ -1,4 +1,4 @@
-﻿import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { StatCard } from "@/features/dashboard/components/StatCard";
 import LedgerTable, {
@@ -13,6 +13,8 @@ import {
   MONITORING_COLUMNS,
   DEFAULT_VISIBLE_MONITORING,
 } from "@/types";
+import { CustomSelect } from "@/components/ui/CustomSelect";
+import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
 
 export default function MonitoringScreen({
   preloadData,
@@ -375,15 +377,22 @@ export default function MonitoringScreen({
               </AnimatePresence>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-3 shrink-0">
-                <StatCard title="Review Workload" value="78%" trend="+4.1%" />
+                <StatCard
+                  title="Review Workload"
+                  icon="assignment_turned_in"
+                  value="78%"
+                  trend="+4.1%"
+                />
                 <StatCard
                   variant="wide"
+                  icon="speed"
                   title="Detection Speed"
                   value="2.4 Hours"
                   subValue="Avg. Trigger Response"
                 />
                 <StatCard
                   variant="error"
+                  icon="gpp_bad"
                   title="Watchlist Exposure"
                   value="$8.2M"
                   subValue="High Probability NPL"
@@ -506,12 +515,12 @@ const AddMonitoringPage = ({
     meet_date_submit: "",
     meet_none_remark: "",
     // Shared / Files
-    call_log_file: null,
-    issue_letter_file: null,
-    recovery_report_file: null,
-    not_meet_call_log_file: null,
-    not_meet_issue_letter_file: null,
-    not_meet_recovery_report_file: null,
+    call_log_file: undefined,
+    issue_letter_file: undefined,
+    recovery_report_file: undefined,
+    not_meet_call_log_file: undefined,
+    not_meet_issue_letter_file: undefined,
+    not_meet_recovery_report_file: undefined,
     // Storing preloaded amounts for the table display
     usd_equivalent:
       initialData?.usd_equivalent ||
@@ -556,21 +565,33 @@ const AddMonitoringPage = ({
     placeholder,
     required = false,
     type = "text",
-  }: any) => (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1 ml-1 flex items-center">
-        {label}
-        {required && <RequiredAsterisk />}
-      </label>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="w-full h-10 px-3 py-2 bg-card  border border-border  rounded-lg text-[11px] font-medium text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary transition-all shadow-sm"
-      />
-    </div>
-  );
+  }: any) => {
+    if (type === "date") {
+      return (
+        <CustomDatePicker
+          label={label}
+          value={value}
+          onChange={onChange}
+          required={required}
+        />
+      );
+    }
+    return (
+      <div className="flex flex-col gap-1.5">
+        <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1 ml-1 flex items-center">
+          {label}
+          {required && <RequiredAsterisk />}
+        </label>
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="w-full h-10 px-3 py-2 bg-card  border border-border  rounded-lg text-[11px] font-medium text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary transition-all shadow-sm"
+        />
+      </div>
+    );
+  };
 
   const SelectField = ({
     label,
@@ -579,32 +600,14 @@ const AddMonitoringPage = ({
     options,
     required = false,
   }: any) => (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1 ml-1 flex items-center">
-        {label}
-        {required && <RequiredAsterisk />}
-      </label>
-      <div className="relative group">
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full h-10 pl-3 pr-10 py-2 bg-card  border border-border  rounded-lg text-[11px] font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary transition-all appearance-none cursor-pointer shadow-sm group-hover:border-primary/30"
-        >
-          {options.map((opt: string) => (
-            <option
-              key={opt}
-              value={opt}
-              className="bg-card  text-foreground"
-            >
-              {opt}
-            </option>
-          ))}
-        </select>
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary pointer-events-none text-[18px]">
-          expand_more
-        </span>
-      </div>
-    </div>
+    <CustomSelect
+      label={label}
+      value={value}
+      onChange={onChange}
+      options={options}
+      required={required}
+      className="w-full h-10 text-sm justify-between"
+    />
   );
 
   const ToggleField = ({ label, value, onChange, required = false }: any) => (
@@ -613,29 +616,27 @@ const AddMonitoringPage = ({
         {label}
         {required && <RequiredAsterisk />}
       </label>
-      <div className="flex w-full p-1 bg-card  border border-border  rounded-lg shadow-sm h-10">
+      <div className="flex w-full p-1 bg-muted/60 border border-border rounded-xl h-11 gap-1">
         <button
           onClick={() => onChange("Meet")}
-          className={`flex-1 flex items-center justify-center gap-2 rounded-md text-[10px] font-black uppercase tracking-widest transition-all ${
+          className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-200 ${
             value === "Meet"
-              ? "bg-primary text-primary-foreground shadow-md"
-              : "text-muted-foreground hover:bg-primary/5"
+              ? "bg-primary text-white shadow-md shadow-primary/20"
+              : "text-muted-foreground hover:text-foreground hover:bg-card/80"
           }`}
         >
-          <span className="material-symbols-outlined text-[16px]">groups</span>
+          <span className="material-symbols-outlined text-[15px]">groups</span>
           Meet
         </button>
         <button
           onClick={() => onChange("Not Meet")}
-          className={`flex-1 flex items-center justify-center gap-2 rounded-md text-[10px] font-black uppercase tracking-widest transition-all ${
+          className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-200 ${
             value === "Not Meet"
-              ? "bg-accent text-primary-foreground shadow-md"
-              : "text-muted-foreground hover:bg-accent/5"
+              ? "bg-slate-700 text-white shadow-md shadow-slate-700/20 dark:bg-slate-300 dark:text-slate-900"
+              : "text-muted-foreground hover:text-foreground hover:bg-card/80"
           }`}
         >
-          <span className="material-symbols-outlined text-[16px]">
-            person_off
-          </span>
+          <span className="material-symbols-outlined text-[15px]">person_off</span>
           Not Meet
         </button>
       </div>
@@ -648,25 +649,27 @@ const AddMonitoringPage = ({
         {label}
         {required && <RequiredAsterisk />}
       </label>
-      <div className="flex w-full p-1 bg-card  border border-border  rounded-lg shadow-sm h-10">
+      <div className="flex w-full p-1 bg-muted/60 border border-border rounded-xl h-11 gap-1">
         <button
           onClick={() => onChange("Yes")}
-          className={`flex-1 flex items-center justify-center rounded-md text-[10px] font-black uppercase tracking-widest transition-all ${
+          className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-200 ${
             value === "Yes"
-              ? "bg-primary text-primary-foreground shadow-md"
-              : "text-muted-foreground hover:bg-primary/5"
+              ? "bg-primary text-white shadow-md shadow-primary/20"
+              : "text-muted-foreground hover:text-foreground hover:bg-card/80"
           }`}
         >
+          <span className="material-symbols-outlined text-[14px]">check_circle</span>
           Yes
         </button>
         <button
           onClick={() => onChange("No")}
-          className={`flex-1 flex items-center justify-center rounded-md text-[10px] font-black uppercase tracking-widest transition-all ${
+          className={`flex-1 flex items-center justify-center gap-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-200 ${
             value === "No"
-              ? "bg-accent text-primary-foreground shadow-md"
-              : "text-muted-foreground hover:bg-accent/5"
+              ? "bg-slate-700 text-white shadow-md shadow-slate-700/20 dark:bg-slate-300 dark:text-slate-900"
+              : "text-muted-foreground hover:text-foreground hover:bg-card/80"
           }`}
         >
+          <span className="material-symbols-outlined text-[14px]">cancel</span>
           No
         </button>
       </div>

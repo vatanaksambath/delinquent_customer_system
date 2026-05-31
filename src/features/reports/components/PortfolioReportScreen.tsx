@@ -1,9 +1,11 @@
-﻿import React, { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   ExportDropdown,
   RowActionMenu,
 } from "@/features/accounts/components/LedgerTable";
+import { CustomSelect } from "@/components/ui/CustomSelect";
+import { CustomDatePicker } from "@/components/ui/CustomDatePicker";
 
 const ALL_COLUMNS = [
   { key: "Accoun Num", label: "Accoun Num", mandatory: true },
@@ -211,8 +213,8 @@ export default function PortfolioReportScreen({
       exit={{ opacity: 0, y: -10 }}
       className="flex flex-col gap-4 h-full overflow-hidden px-8"
     >
-      <div className="flex justify-between items-center bg-card  pb-4 border-b border-border ">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-wrap justify-between items-center bg-card pb-4 border-b border-border gap-3">
+        <div className="flex items-center gap-4 flex-wrap">
           <div className="bg-primary px-5 py-2.5 rounded-lg shadow-lg shadow-primary/20">
             <h2 className="text-primary-foreground font-black text-sm tracking-widest uppercase font-headline">
               Delinquent Customer Monitoring Report
@@ -229,7 +231,7 @@ export default function PortfolioReportScreen({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <div className="relative group mr-2">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-lg group-focus-within:text-primary transition-colors">
               search
@@ -239,16 +241,16 @@ export default function PortfolioReportScreen({
               placeholder="SEARCH ACCOUNT..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-muted border border-border rounded-xl pl-10 pr-4 py-2 text-[10px] uppercase font-bold tracking-widest text-foreground focus:outline-none focus:border-primary/50 w-48 transition-all shadow-sm"
+              className="bg-muted border border-border rounded-xl pl-10 pr-4 py-2 text-[10px] uppercase font-bold tracking-widest text-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10 w-48 transition-all shadow-sm"
             />
           </div>
 
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`h-10 px-4 rounded-xl border transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest relative ${
+            className={`h-10 px-4 rounded-xl border transition-all flex items-center gap-2 text-[10px] font-black uppercase tracking-widest relative cursor-pointer ${
               showFilters
                 ? "bg-primary border-primary text-primary-foreground shadow-lg shadow-primary/20"
-                : "bg-accent  border-border text-muted-foreground hover:text-primary hover:border-primary/40"
+                : "bg-accent border-border text-muted-foreground hover:text-primary hover:border-primary/40"
             }`}
           >
             <span className="material-symbols-outlined text-[18px]">
@@ -266,13 +268,13 @@ export default function PortfolioReportScreen({
               specificSolution !== "ALL" ||
               solutionStatus !== "ALL") &&
               !showFilters && (
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-surface"></span>
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-surface animate-pulse"></span>
               )}
           </button>
 
           <button
             onClick={() => setShowColumnPicker(true)}
-            className="h-10 px-4 rounded-xl bg-accent  border border-border text-muted-foreground hover:text-primary hover:border-primary/40 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all"
+            className="h-10 px-4 rounded-xl bg-accent border border-border text-muted-foreground hover:text-primary hover:border-primary/40 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer"
           >
             <span className="material-symbols-outlined text-[18px]">
               view_column
@@ -298,161 +300,80 @@ export default function PortfolioReportScreen({
                 <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
                   Filter By Date
                 </label>
-                <div
-                  className="flex items-center border border-border  rounded-xl px-3 py-2 bg-card  transition-all focus-within:border-primary/40 cursor-pointer"
-                  onClick={() => {
-                    const input = document.getElementById(
-                      "report-date-picker",
-                    ) as HTMLInputElement;
-                    if (input) input.showPicker();
-                  }}
-                >
-                  <input
-                    id="report-date-picker"
-                    type="date"
-                    value={filterDate}
-                    onChange={(e) => setFilterDate(e.target.value)}
-                    className="bg-transparent text-[10px] font-bold text-foreground outline-none w-full cursor-pointer"
-                  />
-                </div>
+                <CustomDatePicker
+                  value={filterDate}
+                  onChange={setFilterDate}
+                  className="w-full h-10"
+                />
               </div>
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                  Filter By Product Group
-                </label>
-                <select
-                  value={productGroup}
-                  onChange={(e) => setProductGroup(e.target.value)}
-                  className="bg-card  border border-border  rounded-xl px-3 py-2 text-[10px] font-bold text-foreground focus:outline-none appearance-none"
-                >
-                  <option value="ALL">ALL PRODUCTS</option>
-                  <option value="Term Loan">Term Loan</option>
-                  <option value="Overdraft">Overdraft</option>
-                </select>
-              </div>
+              <CustomSelect
+                label="Filter By Product Group"
+                value={productGroup}
+                onChange={setProductGroup}
+                options={["ALL", "Term Loan", "Overdraft"].map(o => ({ value: o, label: o === "ALL" ? "ALL PRODUCTS" : o }))}
+              />
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                  Filter By Region
-                </label>
-                <select
-                  value={region}
-                  onChange={(e) => setRegion(e.target.value)}
-                  className="bg-card  border border-border  rounded-xl px-3 py-2 text-[10px] font-bold text-foreground focus:outline-none appearance-none"
-                >
-                  <option value="ALL">ALL REGIONS</option>
-                  <option value="Phnom Penh">Phnom Penh</option>
-                  <option value="Siem Reap">Siem Reap</option>
-                </select>
-              </div>
+              <CustomSelect
+                label="Filter By Region"
+                value={region}
+                onChange={setRegion}
+                options={["ALL", "Phnom Penh", "Siem Reap"].map(o => ({ value: o, label: o === "ALL" ? "ALL REGIONS" : o }))}
+              />
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                  Filter By Branch
-                </label>
-                <select
-                  value={branch}
-                  onChange={(e) => setBranch(e.target.value)}
-                  className="bg-card  border border-border  rounded-xl px-3 py-2 text-[10px] font-bold text-foreground focus:outline-none appearance-none"
-                >
-                  <option value="ALL">ALL BRANCHES</option>
-                  <option value="016">Branch 016</option>
-                  <option value="012">Branch 012</option>
-                  <option value="045">Branch 045</option>
-                </select>
-              </div>
+              <CustomSelect
+                label="Filter By Branch"
+                value={branch}
+                onChange={setBranch}
+                options={[
+                  { value: "ALL", label: "ALL BRANCHES" },
+                  { value: "016", label: "Branch 016" },
+                  { value: "012", label: "Branch 012" },
+                  { value: "045", label: "Branch 045" },
+                ]}
+              />
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                  Filter By LRM
-                </label>
-                <select
-                  value={lrm}
-                  onChange={(e) => setLrm(e.target.value)}
-                  className="bg-card  border border-border  rounded-xl px-3 py-2 text-[10px] font-bold text-foreground focus:outline-none appearance-none"
-                >
-                  <option value="ALL">ALL LRMs</option>
-                  <option value="Sophorn T.">Sophorn T.</option>
-                  <option value="Dara V.">Dara V.</option>
-                </select>
-              </div>
+              <CustomSelect
+                label="Filter By LRM"
+                value={lrm}
+                onChange={setLrm}
+                options={["ALL", "Sophorn T.", "Dara V."].map(o => ({ value: o, label: o === "ALL" ? "ALL LRMs" : o }))}
+              />
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                  Filter By LRO
-                </label>
-                <select
-                  value={lro}
-                  onChange={(e) => setLro(e.target.value)}
-                  className="bg-card  border border-border  rounded-xl px-3 py-2 text-[10px] font-bold text-foreground focus:outline-none appearance-none"
-                >
-                  <option value="ALL">ALL LROs</option>
-                  <option value="Samnang K.">Samnang K.</option>
-                  <option value="Vannak S.">Vannak S.</option>
-                </select>
-              </div>
+              <CustomSelect
+                label="Filter By LRO"
+                value={lro}
+                onChange={setLro}
+                options={["ALL", "Samnang K.", "Vannak S."].map(o => ({ value: o, label: o === "ALL" ? "ALL LROs" : o }))}
+              />
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                  Filter By Legal Action
-                </label>
-                <select
-                  value={legalAction}
-                  onChange={(e) => setLegalAction(e.target.value)}
-                  className="bg-card  border border-border  rounded-xl px-3 py-2 text-[10px] font-bold text-foreground focus:outline-none appearance-none"
-                >
-                  <option value="ALL">ALL ACTIONS</option>
-                  <option value="Legal Case">Legal Case</option>
-                  <option value="Non Legal Case">Non Legal Case</option>
-                </select>
-              </div>
+              <CustomSelect
+                label="Filter By Legal Action"
+                value={legalAction}
+                onChange={setLegalAction}
+                options={["ALL", "Legal Case", "Non Legal Case"].map(o => ({ value: o, label: o === "ALL" ? "ALL ACTIONS" : o }))}
+              />
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                  Filter By Possible Solution
-                </label>
-                <select
-                  value={possibleSolution}
-                  onChange={(e) => setPossibleSolution(e.target.value)}
-                  className="bg-card  border border-border  rounded-xl px-3 py-2 text-[10px] font-bold text-foreground focus:outline-none appearance-none"
-                >
-                  <option value="ALL">ALL SOLUTIONS</option>
-                  <option value="Restructure">Restructure</option>
-                  <option value="Refinance">Refinance</option>
-                </select>
-              </div>
+              <CustomSelect
+                label="Filter By Possible Solution"
+                value={possibleSolution}
+                onChange={setPossibleSolution}
+                options={["ALL", "Restructure", "Refinance"].map(o => ({ value: o, label: o === "ALL" ? "ALL SOLUTIONS" : o }))}
+              />
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                  Filter By Specific Solution
-                </label>
-                <select
-                  value={specificSolution}
-                  onChange={(e) => setSpecificSolution(e.target.value)}
-                  className="bg-card  border border-border  rounded-xl px-3 py-2 text-[10px] font-bold text-foreground focus:outline-none appearance-none"
-                >
-                  <option value="ALL">ALL SPECIFIC SOLUTIONS</option>
-                  <option value="Lower Interest">Lower Interest</option>
-                  <option value="Extension">Extension</option>
-                </select>
-              </div>
+              <CustomSelect
+                label="Filter By Specific Solution"
+                value={specificSolution}
+                onChange={setSpecificSolution}
+                options={["ALL", "Lower Interest", "Extension"].map(o => ({ value: o, label: o === "ALL" ? "ALL SPECIFIC SOLUTIONS" : o }))}
+              />
 
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                  Filter By Solution status
-                </label>
-                <select
-                  value={solutionStatus}
-                  onChange={(e) => setSolutionStatus(e.target.value)}
-                  className="bg-card  border border-border  rounded-xl px-3 py-2 text-[10px] font-bold text-foreground focus:outline-none appearance-none"
-                >
-                  <option value="ALL">ALL STATUSES</option>
-                  <option value="Under Review">Under Review</option>
-                  <option value="Approved">Approved</option>
-                  <option value="Rejected">Rejected</option>
-                </select>
-              </div>
+              <CustomSelect
+                label="Filter By Solution status"
+                value={solutionStatus}
+                onChange={setSolutionStatus}
+                options={["ALL", "Under Review", "Approved", "Rejected"].map(o => ({ value: o, label: o === "ALL" ? "ALL STATUSES" : o }))}
+              />
 
               <div className="flex items-end lg:col-start-5">
                 <button
@@ -468,7 +389,7 @@ export default function PortfolioReportScreen({
                     setLrm("ALL");
                     setSpecificSolution("ALL");
                   }}
-                  className="w-full h-9 rounded-xl border border-border  text-muted-foreground hover:text-red-500 hover:border-red-500/30 text-[9px] font-black uppercase tracking-widest transition-all"
+                  className="w-full h-9 rounded-xl border border-border text-muted-foreground hover:text-red-500 hover:border-red-400/50 hover:bg-red-500/5 text-[9px] font-black uppercase tracking-widest transition-all cursor-pointer"
                 >
                   Reset All Filters
                 </button>
@@ -527,13 +448,23 @@ export default function PortfolioReportScreen({
             </tbody>
           </table>
           {filteredData.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-20 text-muted-foreground group">
-              <span className="material-symbols-outlined text-5xl mb-4 group-hover:scale-110 transition-transform">
-                search_off
-              </span>
-              <p className="text-xs font-bold uppercase tracking-[0.2em]">
-                No matching records found
-              </p>
+            <div className="flex flex-col items-center justify-center py-24 px-8 gap-4">
+              <div className="w-20 h-20 rounded-3xl bg-muted/60 border border-border/60 flex items-center justify-center">
+                <span className="material-symbols-outlined text-4xl text-muted-foreground/40">search_off</span>
+              </div>
+              <div className="text-center">
+                <p className="text-sm font-bold text-foreground/70 uppercase tracking-widest mb-1">No Matching Records</p>
+                <p className="text-[11px] text-muted-foreground max-w-xs leading-relaxed">
+                  No records match your active filters. Try broadening your search or resetting the filters.
+                </p>
+              </div>
+              <button
+                onClick={() => setSearchTerm("")}
+                className="flex items-center gap-1.5 text-[9px] font-bold text-primary/70 hover:text-primary uppercase tracking-widest transition-colors cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[12px]">restart_alt</span>
+                <span>Clear Search</span>
+              </button>
             </div>
           )}
         </div>

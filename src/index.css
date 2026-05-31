@@ -49,7 +49,25 @@
   html {
     @apply font-sans;
   }
+  /* Global accessibility: focus-visible ring */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary/40 ring-offset-1 ring-offset-background;
+  }
+  /* Disabled state for all buttons */
+  button:disabled {
+    @apply opacity-40 cursor-not-allowed pointer-events-none;
+  }
+  /* Cursor on select elements */
+  select {
+    @apply cursor-pointer;
+  }
+  /* Cursor on interactive form elements */
+  input[type="checkbox"],
+  input[type="radio"] {
+    @apply cursor-pointer;
+  }
 }
+
 @layer components {
   .glass-panel {
     @apply bg-background/90 border border-border transition-all;
@@ -58,7 +76,7 @@
     @apply bg-card border border-border/50 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300;
   }
   .tech-button {
-    @apply px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all duration-200;
+    @apply px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer;
   }
   .digital-badge {
     @apply px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-tighter uppercase;
@@ -79,6 +97,23 @@
   }
   .tabular-nums {
     font-variant-numeric: tabular-nums;
+  }
+  /* Section heading utility */
+  .section-heading {
+    @apply text-[10px] font-black text-muted-foreground uppercase tracking-[0.25em];
+  }
+  /* Premium empty state container */
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-20 gap-4 text-center;
+  }
+  .empty-state-icon {
+    @apply w-20 h-20 rounded-3xl bg-muted/60 border border-border/60 flex items-center justify-center;
+  }
+  .empty-state-title {
+    @apply text-sm font-bold text-foreground/70 uppercase tracking-widest mb-1;
+  }
+  .empty-state-desc {
+    @apply text-[11px] text-muted-foreground max-w-xs leading-relaxed;
   }
 } /* Print Utilities */
 @media print {

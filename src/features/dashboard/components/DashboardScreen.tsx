@@ -155,7 +155,7 @@ const ModernDropdown = React.memo(
       options.find((o) => o.id === value)?.label || "Select...";
 
     return (
-      <div className="flex flex-col flex-1 min-w-[140px] relative">
+      <div className={`flex flex-col flex-1 min-w-[140px] relative ${isOpen ? "z-50" : "z-10"}`}>
         <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5 ml-1">
           {label}
         </label>
@@ -222,34 +222,65 @@ const MetricCard = React.memo(
     icon: string;
     colorClass: string;
     onClick: () => void;
-  }) => (
-    <div
-      onClick={onClick}
-      className="modern-card p-4 flex items-center gap-4 group cursor-pointer"
-    >
-      <div
-        className={`w-14 h-14 rounded-xl flex items-center justify-center shadow-lg ${colorClass} text-primary-foreground`}
+  }) => {
+    const iconColorMap: Record<string, string> = {
+      "bg-primary": "text-primary",
+      "bg-accent": "text-amber-500",
+      "bg-error": "text-red-500",
+    };
+    const iconBgMap: Record<string, string> = {
+      "bg-primary": "bg-primary/10",
+      "bg-accent": "bg-amber-500/10",
+      "bg-error": "bg-red-500/10",
+    };
+    const accentBarMap: Record<string, string> = {
+      "bg-primary": "bg-primary",
+      "bg-accent": "bg-amber-500",
+      "bg-error": "bg-red-500",
+    };
+    const iconColor = iconColorMap[colorClass] ?? "text-primary";
+    const iconBg = iconBgMap[colorClass] ?? "bg-primary/10";
+    const accentBar = accentBarMap[colorClass] ?? "bg-primary";
+
+    return (
+      <motion.div
+        onClick={onClick}
+        whileHover={{ y: -2 }}
+        transition={{ duration: 0.2 }}
+        className="relative bg-card border border-border/60 rounded-2xl p-5 flex items-center gap-5 cursor-pointer shadow-sm hover:shadow-lg hover:border-primary/20 transition-all duration-300 overflow-hidden group"
       >
-        <span className="material-symbols-outlined text-3xl">{icon}</span>
-      </div>
-      <div className="flex flex-col">
-        <div className="flex items-center gap-2">
-          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-1">
-            {title}
-          </p>
-          <span className="material-symbols-outlined text-[10px] text-primary opacity-0 group-hover:opacity-100">
-            open_in_new
+        {/* Soft gradient tint */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent pointer-events-none" />
+        {/* Left accent bar */}
+        <div className={`absolute left-0 top-5 bottom-5 w-[3px] rounded-r-full ${accentBar}`} />
+
+        {/* Icon box */}
+        <div className={`relative w-14 h-14 rounded-2xl ${iconBg} flex items-center justify-center shadow-sm shrink-0 ml-1 group-hover:scale-110 transition-transform duration-300`}>
+          <span className={`material-symbols-outlined text-[28px] ${iconColor}`}>
+            {icon}
           </span>
         </div>
-        <h3 className="text-2xl font-headline font-bold text-foreground tabular-nums">
-          {value}
-        </h3>
-        <p className="text-[10px] text-muted-foreground font-medium mt-1.5">
-          {subText}
-        </p>
-      </div>
-    </div>
-  ),
+
+        {/* Content */}
+        <div className="flex flex-col min-w-0 z-10">
+          <div className="flex items-center gap-1.5 mb-1">
+            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.22em]">
+              {title}
+            </p>
+            <span className="material-symbols-outlined text-[10px] text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+              open_in_new
+            </span>
+          </div>
+          <h3 className="text-3xl font-headline font-bold text-foreground tabular-nums leading-none tracking-tight">
+            {value}
+          </h3>
+          <p className="text-[10px] text-muted-foreground font-medium mt-2 truncate">
+            {subText}
+          </p>
+        </div>
+      </motion.div>
+    );
+  },
 );
 
 const ModernSummaryTable = React.memo(
@@ -391,7 +422,7 @@ export default function DashboardScreen() {
       </AnimatePresence>
 
       {/* 1. Header & Filters */}
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 relative z-[100]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -446,7 +477,7 @@ export default function DashboardScreen() {
           </div>
         </div>
 
-        <div className="glass-panel p-4 rounded-2xl flex flex-wrap items-end gap-4 shadow-sm border-border relative z-10 bg-card ">
+        <div className="glass-panel p-4 rounded-2xl flex flex-wrap items-end gap-4 shadow-sm border-border relative z-10 bg-card">
           <ModernDropdown
             label="Region"
             options={REGIONS}
@@ -489,7 +520,7 @@ export default function DashboardScreen() {
                 `Generating preview for ${region === "all" ? "Entire Portfolio" : REGIONS.find((r) => r.id === region)?.label}...`,
               )
             }
-            className="h-10 px-8 bg-on-surface text-surface text-[11px] font-bold uppercase tracking-widest rounded-lg hover:bg-primary hover:text-primary-foreground shadow-sm"
+            className="h-10 px-8 bg-foreground text-background text-[11px] font-bold uppercase tracking-widest rounded-xl hover:bg-primary hover:text-primary-foreground shadow-sm transition-all duration-200 cursor-pointer"
           >
             Preview Report
           </button>
@@ -955,10 +986,12 @@ export default function DashboardScreen() {
                 ]}
                 totalRow={["TOTAL", "0", "0", "0"]}
               />
-              <div className="flex-1 overflow-y-auto p-6 bg-primary/[0.03] border-primary/20 flex flex-col items-center justify-center text-center shadow-inner cursor-pointer group">
-                <span className="material-symbols-outlined text-4xl text-primary mb-3">
-                  auto_awesome
-                </span>
+              <div className="flex-1 overflow-y-auto p-6 modern-card rounded-2xl border border-primary/10 bg-primary/[0.03] flex flex-col items-center justify-center text-center shadow-inner cursor-pointer group hover:border-primary/30 transition-all duration-300">
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                  <span className="material-symbols-outlined text-3xl text-primary">
+                    auto_awesome
+                  </span>
+                </div>
                 <h4 className="text-xs font-bold text-foreground uppercase mb-2 tracking-widest">
                   AI Portfolio Prediction
                 </h4>
@@ -967,14 +1000,15 @@ export default function DashboardScreen() {
                   <span className="text-primary font-bold">1.2%</span> in the
                   next quarter due to aggressive restructuring.
                 </p>
-                <div className="w-full h-1 bg-outline/20 rounded-full mt-4 overflow-hidden relative">
+                <div className="w-full h-1.5 bg-outline/20 rounded-full mt-5 overflow-hidden relative">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: "78%" }}
                     transition={{ duration: 2, ease: "easeOut" }}
-                    className="h-full bg-primary"
+                    className="h-full bg-gradient-to-r from-primary to-blue-400 rounded-full"
                   ></motion.div>
                 </div>
+                <p className="text-[9px] font-bold text-primary/60 uppercase tracking-widest mt-2">78% Confidence</p>
               </div>
             </div>
           </div>

@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { LedgerEntry, ALL_COLUMNS, DEFAULT_VISIBLE } from "@/types";
 import { motion, AnimatePresence } from "motion/react";
 import * as XLSX from "xlsx";
@@ -590,10 +590,10 @@ export default function LedgerTable({
                         <td key={col.key} className="py-4 px-4">
                           <div className="flex items-center gap-2">
                             <div
-                              className={`w-1.5 h-1.5 rounded-full ${(val as number) > 90 ? "bg-error" : "bg-primary"}`}
+                              className={`w-1.5 h-1.5 rounded-full ${(val as number) > 90 ? "bg-rose-500" : "bg-primary"}`}
                             />
                             <span
-                              className={`tabular-nums font-bold tracking-tight ${(val as number) > 90 ? "text-error" : "text-foreground"}`}
+                              className={`tabular-nums font-bold tracking-tight ${(val as number) > 90 ? "text-rose-500" : "text-foreground"}`}
                             >
                               {val as number} DPD
                             </span>
@@ -629,6 +629,25 @@ export default function LedgerTable({
           </tbody>
         </table>
       </div>
+
+      {/* Premium Empty State — shown when no data */}
+      {paginatedData.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-24 px-8 gap-4">
+          <div className="w-20 h-20 rounded-3xl bg-muted/60 border border-border/60 flex items-center justify-center shadow-inner">
+            <span className="material-symbols-outlined text-4xl text-muted-foreground/40">manage_search</span>
+          </div>
+          <div className="text-center">
+            <p className="text-sm font-bold text-foreground/70 uppercase tracking-widest mb-1">No Records Found</p>
+            <p className="text-[11px] text-muted-foreground max-w-xs leading-relaxed">
+              No accounts match your current filters. Try adjusting your search criteria or clearing the active filters.
+            </p>
+          </div>
+          <div className="flex items-center gap-1.5 text-[9px] font-bold text-muted-foreground/50 uppercase tracking-widest">
+            <span className="material-symbols-outlined text-[12px]">info</span>
+            <span>Filters may be too restrictive</span>
+          </div>
+        </div>
+      )}
 
       <div className="px-8 py-4 flex justify-between items-center bg-background border-t border-border  shrink-0">
         <div className="flex items-center gap-3">

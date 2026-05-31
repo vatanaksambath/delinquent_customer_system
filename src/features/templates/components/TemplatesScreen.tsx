@@ -15,6 +15,7 @@ import {
   LayoutTemplate,
   Pencil,
 } from "lucide-react";
+import { CustomSelect } from "@/components/ui/CustomSelect";
 
 export default function TemplatesScreen() {
   // Internal Alert Rules State
@@ -121,17 +122,12 @@ export default function TemplatesScreen() {
               <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5 pl-1">
                 Escalation Trigger
               </label>
-              <div className="relative group">
-                <select
+                <CustomSelect
                   value={triggerType}
-                  onChange={(e) => setTriggerType(e.target.value)}
-                  className="w-full bg-card  border border-border rounded-xl pl-4 pr-10 py-3 text-sm font-semibold text-card-foreground  focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none transition-all group-hover:border-border dark:group-hover:border-border shadow-sm"
-                >
-                  <option>Event-Based (Immediate)</option>
-                  <option>Scheduled Digests</option>
-                </select>
-                <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-              </div>
+                  onChange={setTriggerType}
+                  options={["Event-Based (Immediate)", "Scheduled Digests"]}
+                  className="w-full h-11 text-sm justify-between"
+                />
             </div>
 
             <AnimatePresence>
@@ -145,18 +141,16 @@ export default function TemplatesScreen() {
                   <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5 pl-1">
                     Digest Frequency
                   </label>
-                  <div className="relative group">
-                    <select
+                    <CustomSelect
                       value={digestFrequency}
-                      onChange={(e) => setDigestFrequency(e.target.value)}
-                      className="w-full bg-card  border border-border rounded-xl pl-4 pr-10 py-3 text-sm font-semibold text-card-foreground  focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 appearance-none transition-all group-hover:border-border dark:group-hover:border-border shadow-sm"
-                    >
-                      <option>Daily at 8:00 AM</option>
-                      <option>Weekly on Monday Morning</option>
-                      <option>Bi-Weekly</option>
-                    </select>
-                    <ChevronDown className="w-4 h-4 text-muted-foreground absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  </div>
+                      onChange={setDigestFrequency}
+                      options={[
+                        "Daily at 8:00 AM",
+                        "Weekly on Monday Morning",
+                        "Bi-Weekly",
+                      ]}
+                      className="w-full h-11 text-sm justify-between"
+                    />
                 </motion.div>
               )}
             </AnimatePresence>

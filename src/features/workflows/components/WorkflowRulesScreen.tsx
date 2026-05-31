@@ -112,14 +112,14 @@ export default function WorkflowRulesScreen() {
                         onChange={(e) =>
                           updateBucketName(index, e.target.value)
                         }
-                        className={`text-xs font-bold px-2 py-1 rounded w-full border outline-none ${
+                        className={`text-xs font-bold px-3 py-1.5 rounded-md w-full outline-none transition-all ${
                           index === 0
-                            ? "bg-muted  border-transparent"
+                            ? "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-transparent"
                             : index === 1
-                              ? "bg-accent/10 border-transparent text-accent"
+                              ? "bg-amber-500/10 text-amber-700 dark:text-amber-500 border border-transparent focus:border-amber-500/50"
                               : isLast
-                                ? "bg-error text-primary-foreground border-transparent shadow-sm"
-                                : "bg-error/10 text-error border-error/50 focus:border-error"
+                                ? "bg-rose-500 text-white border border-transparent shadow-sm focus:ring-2 focus:ring-rose-500/20"
+                                : "bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/30 focus:border-rose-500"
                         }`}
                       />
                     </div>
